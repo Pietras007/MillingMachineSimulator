@@ -11,6 +11,7 @@ uniform mat4 view;
 uniform mat4 projection;
 
 out vec3 FragPos;
+out vec3 Normal;
 out vec2 TexCoords;
 out mat3 TBN;
 
@@ -18,6 +19,7 @@ void main()
 {
     //gl_Position = mvp * vec4(a_Position, 1.0);
     FragPos = vec3(vec4(a_Position, 1.0) * model);
+    Normal = aNormal;
     TexCoords = aTexCoords;
 
     vec3 T = normalize(vec3(model * vec4(aTangent,   0.0)));
