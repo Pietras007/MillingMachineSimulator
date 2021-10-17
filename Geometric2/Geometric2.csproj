@@ -66,6 +66,7 @@
     <Compile Include="MatrixHelpers\ViewMatrix.cs" />
     <Compile Include="ModelGeneration\Coursor.cs" />
     <Compile Include="ModelGeneration\Element.cs" />
+    <Compile Include="ModelGeneration\MillModel.cs" />
     <Compile Include="ModelGeneration\Torus.cs" />
     <Compile Include="ModelGeneration\TransformCenterLines.cs" />
     <Compile Include="ModelGeneration\XyzLines.cs" />
@@ -79,6 +80,8 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RasterizationClasses\Shader.cs" />
+    <Compile Include="RasterizationClasses\Texture.cs" />
+    <None Include="Shaders\FragmentShaderMillTop.frag" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
@@ -104,10 +107,14 @@
     </Compile>
     <None Include="Shaders\FragmentShader.frag" />
     <None Include="Shaders\VertexShader.vert" />
+    <None Include="Shaders\VertexShaderMillTop.vert" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="Resources\50specular.png" />
+    <Content Include="Resources\wood.jpg" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

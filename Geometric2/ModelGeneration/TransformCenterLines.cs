@@ -39,6 +39,7 @@ namespace Geometric2.ModelGeneration
 
         public override void CreateGlElement(Shader _shader)
         {
+            _shader.Use();
             var a_Position_Location = _shader.GetAttribLocation("a_Position");
             transformLinesVAO = GL.GenVertexArray();
             transformLinesVBO = GL.GenBuffer();
@@ -54,6 +55,7 @@ namespace Geometric2.ModelGeneration
 
         public override void RenderGlElement(Shader _shader, Vector3 rotationCentre)
         {
+            _shader.Use();
             if (selectedElements != null && selectedElements.Count > 1)
             {
                 Matrix4 modelMatrix = TranslationMatrix.CreateTranslationMatrix(rotationCenterPoint);

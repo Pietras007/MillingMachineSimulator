@@ -57,6 +57,7 @@ namespace Geometric2.ModelGeneration
 
         public virtual void CreateCenterOfElement(Shader _shader)
         {
+            _shader.Use();
             var a_Position_Location = _shader.GetAttribLocation("a_Position");
             centerLinesVAO = GL.GenVertexArray();
             centerLinesVBO = GL.GenBuffer();
@@ -72,7 +73,8 @@ namespace Geometric2.ModelGeneration
 
         public virtual void RenderCenterOfElement(Shader _shader)
         {
-            if(IsSelected)
+            _shader.Use();
+            if (IsSelected)
             {
                 GL.BindVertexArray(centerLinesVAO);
                 _shader.SetVector3("fragmentColor", ColorHelper.ColorToVector(Color.Red));

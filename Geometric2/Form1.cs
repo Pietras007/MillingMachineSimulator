@@ -39,14 +39,17 @@ namespace Geometric2
             thread.Start();
 
             coursor = new Coursor();
+            millModel = new MillModel();
             coursor.CoursorMode = CoursorMode.Auto;
             transformCenterLines.selectedElements = SelectedElements;
             this.glControl1.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.glControl1_MouseWheel);
         }
 
         private Shader _shader;
+        private Shader _millshader;
         private Camera _camera;
         private Coursor coursor;
+        private MillModel millModel;
 
 
         private XyzLines xyzLines = new XyzLines();

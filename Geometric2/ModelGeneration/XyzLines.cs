@@ -29,6 +29,7 @@ namespace Geometric2.ModelGeneration
 
         public override void CreateGlElement(Shader _shader)
         {
+            _shader.Use();
             var a_Position_Location = _shader.GetAttribLocation("a_Position");
             xyzLinesVAO = GL.GenVertexArray();
             xyzLinesVBO = GL.GenBuffer();
@@ -44,6 +45,7 @@ namespace Geometric2.ModelGeneration
 
         public override void RenderGlElement(Shader _shader, Vector3 rotationCentre)
         {
+            _shader.Use();
             _shader.SetMatrix4("model", Matrix4.Identity);
             GL.BindVertexArray(xyzLinesVAO);
             _shader.SetVector3("fragmentColor", ColorHelper.ColorToVector(Color.Red));

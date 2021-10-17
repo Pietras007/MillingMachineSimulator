@@ -27,8 +27,10 @@ namespace Geometric2
             GL.ClearColor(Color.LightCyan);
             GL.Enable(EnableCap.DepthTest);
             _shader = new Shader("./../../Shaders/VertexShader.vert", "./../../Shaders/FragmentShader.frag");
+            _millshader = new Shader("./../../Shaders/VertexShaderMillTop.vert", "./../../Shaders/FragmentShaderMillTop.frag");
 
             coursor.CreateCoursor(_shader);
+            millModel.CreateGlElement(_millshader);
             foreach (var el in Elements)
             {
                 el.CreateGlElement(_shader);
@@ -60,8 +62,23 @@ namespace Geometric2
         {
             _shader.Use();
             coursor.DrawCoursor(_shader, viewMatrix, projectionMatrix, _camera);
+            _millshader.Use();
+            _millshader.SetMatrix4("view", viewMatrix);
+            _millshader.SetMatrix4("projection", projectionMatrix);
+            _millshader.SetVector3("viewPos", _camera.GetCameraPosition());
+
+            _millshader.SetInt("material.diffuse", 0);
+            _millshader.SetInt("material.specular", 1);
+            _millshader.SetFloat("material.shininess", 32.0f);
+
+            _millshader.SetVector3("light.position", _camera.GetCameraPosition());
+            _millshader.SetVector3("light.ambient", new Vector3(0.9f, 0.9f, 0.9f));
+            _millshader.SetVector3("light.diffuse", new Vector3(0.4f, 0.4f, 0.4f));
+            _millshader.SetVector3("light.specular", new Vector3(0.5f, 0.5f, 0.5f));
+            millModel.RenderGlElement(_millshader, coursor.CoursorGloalPosition);
             foreach (var el in Elements)
             {
+                _shader.Use();
                 el.RenderGlElement(_shader, coursor.CoursorGloalPosition);
             }
            

@@ -43,6 +43,7 @@ namespace Geometric2.ModelGeneration
 
         public void CreateCoursor(Shader _shader)
         {
+            _shader.Use();
             var a_Position_Location = _shader.GetAttribLocation("a_Position");
             coursorVAO = GL.GenVertexArray();
             coursorVBO = GL.GenBuffer();
@@ -58,6 +59,7 @@ namespace Geometric2.ModelGeneration
 
         public void DrawCoursor(Shader _shader, Matrix4 viewMatrix, Matrix4 projectionMatrix, Camera _camera)
         {
+            _shader.Use();
             if (CoursorMode != CoursorMode.Manual || CoursorMoving == true || ChangeCoursorScreenPosition)
             {
                 ChangeCoursorScreenPosition = false;
