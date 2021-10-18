@@ -80,7 +80,7 @@ namespace Geometric2.ModelGeneration
             _shader.SetMatrix4("model", model);
             GL.BindVertexArray(MillModelTopLayerVAO);
             texture.Use();
-            //specular.Use(TextureUnit.Texture1);
+            specular.Use(TextureUnit.Texture1);
             GL.DrawElements(PrimitiveType.Triangles, 3 * TopLayerPoints.Length, DrawElementsType.UnsignedInt, 0);
             GL.BindVertexArray(0);
 

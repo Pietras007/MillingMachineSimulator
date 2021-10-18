@@ -27,11 +27,11 @@ in mat3 TBN;
 void main()
 {
     //Ambient
-    vec3 lightPos = light.position;//vec3(0,1,0);
-    vec3 ambient = light.ambient * vec3(texture(material.diffuse, TexCoords)) * 0.1;
+    vec3 lightPos = light.position;
+    vec3 ambient = light.ambient * vec3(texture(material.diffuse, TexCoords));
 
     // Diffuse 
-    vec3 norm = Normal;// normalize(TBN * vec3(0, 0,1));//normalize(texture(material.diffuse, TexCoords).rgb*2.0 - 1.0);
+    vec3 norm = normalize(Normal); //normalize(TBN * vec3(0, 0,1));//normalize(texture(material.diffuse, TexCoords).rgb*2.0 - 1.0);
     vec3 lightDir = normalize(lightPos - FragPos);
     float diff = max(dot(norm, lightDir), 0.0);
     vec3 diffuse = light.diffuse * diff * vec3(texture(material.diffuse, TexCoords));
