@@ -69,13 +69,13 @@ namespace Geometric2
             _millshader.SetVector3("viewPos", camPos);
 
             _millshader.SetInt("material.diffuse", 0);
-            //_millshader.SetInt("material.specular", 1);
-            _millshader.SetFloat("material.shininess", 8.0f);
+            _millshader.SetInt("material.specular", 1);
+            _millshader.SetFloat("material.shininess", 16.0f);
 
-            _millshader.SetVector3("light.position", camPos);// new Vector3(0,2,1));
-            _millshader.SetVector3("light.ambient", new Vector3(0.4f, 0.3f, 0.4f));
+            _millshader.SetVector3("light.position", camPos);
+            _millshader.SetVector3("light.ambient", new Vector3(0.3f, 0.3f, 0.3f));
             _millshader.SetVector3("light.diffuse", new Vector3(0.5f, 0.5f, 0.5f));
-            _millshader.SetVector3("light.specular", new Vector3(0.9f, 0.9f, 0.9f));
+            _millshader.SetVector3("light.specular", new Vector3(0.3f, 0.3f, 0.3f));
             millModel.RenderGlElement(_millshader, coursor.CoursorGloalPosition);
             foreach (var el in Elements)
             {

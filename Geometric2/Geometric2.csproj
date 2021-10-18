@@ -53,7 +53,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Functions\NormalsGenerator.cs" />
-    <Compile Include="Functions\TangentGenerate.cs" />
     <Compile Include="GLControl.cs">
       <SubType>Form</SubType>
     </Compile>

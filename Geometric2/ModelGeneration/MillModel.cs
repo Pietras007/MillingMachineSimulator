@@ -51,21 +51,14 @@ namespace Geometric2.ModelGeneration
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, MillModelTopLayerEBO);
             GL.BufferData(BufferTarget.ElementArrayBuffer, TopLayerIndices.Length * sizeof(uint), TopLayerIndices, BufferUsageHint.DynamicDraw);
             var a_Position_Location = _shader.GetAttribLocation("a_Position");
-            GL.VertexAttribPointer(a_Position_Location, 3, VertexAttribPointerType.Float, true, 14 * sizeof(float), 0);
+            GL.VertexAttribPointer(a_Position_Location, 3, VertexAttribPointerType.Float, true, 8 * sizeof(float), 0);
             GL.EnableVertexAttribArray(a_Position_Location);
-
             var aNormal = _shader.GetAttribLocation("aNormal");
             GL.EnableVertexAttribArray(aNormal);
-            GL.VertexAttribPointer(aNormal, 3, VertexAttribPointerType.Float, false, 14 * sizeof(float), 3 * sizeof(float));
+            GL.VertexAttribPointer(aNormal, 3, VertexAttribPointerType.Float, false, 8 * sizeof(float), 3 * sizeof(float));
             var aTexCoords = _shader.GetAttribLocation("aTexCoords");
             GL.EnableVertexAttribArray(aTexCoords);
-            GL.VertexAttribPointer(aTexCoords, 2, VertexAttribPointerType.Float, false, 14 * sizeof(float), 6 * sizeof(float));
-            var aTangent = _shader.GetAttribLocation("aTangent");
-            GL.EnableVertexAttribArray(aTangent);
-            GL.VertexAttribPointer(aTangent, 3, VertexAttribPointerType.Float, false, 14 * sizeof(float), 8 * sizeof(float));
-            var aBitangent = _shader.GetAttribLocation("aBitangent");
-            GL.EnableVertexAttribArray(aBitangent);
-            GL.VertexAttribPointer(aBitangent, 3, VertexAttribPointerType.Float, false, 14 * sizeof(float), 11 * sizeof(float));
+            GL.VertexAttribPointer(aTexCoords, 2, VertexAttribPointerType.Float, false, 8 * sizeof(float), 6 * sizeof(float));
 
             CreateCenterOfElement(_shader);
         }
@@ -85,33 +78,11 @@ namespace Geometric2.ModelGeneration
             GL.BindVertexArray(0);
 
             RenderCenterOfElement(_shader);
-
-
-
-
-            //Matrix4 model = ModelMatrix.CreateModelMatrix(ElementScale * TempElementScale, (float)(2 * Math.PI * ElementRotationX / 360), (float)(2 * Math.PI * ElementRotationY / 360), (float)(2 * Math.PI * ElementRotationZ / 360), CenterPosition + Translation + TemporaryTranslation);
-            //TempRotationQuaternion = Quaternion.FromEulerAngles((float)(2 * Math.PI * ElementRotationX / 360), (float)(2 * Math.PI * ElementRotationY / 360), (float)(2 * Math.PI * ElementRotationZ / 360));
-            //Matrix4 model = ModelMatrix.CreateModelMatrix(ElementScale * TempElementScale, RotationQuaternion, CenterPosition + Translation + TemporaryTranslation, rotationCentre, TempRotationQuaternion);
-            //_shader.SetMatrix4("model", model);
-            //GL.BindVertexArray(MillModelTopLayerVAO);
-            //if (IsSelected)
-            //{
-            //    _shader.SetVector3("fragmentColor", ColorHelper.ColorToVector(Color.Orange));
-            //}
-            //else
-            //{
-            //    _shader.SetVector3("fragmentColor", ColorHelper.ColorToVector(Color.Black));
-            //}
-
-            //GL.DrawElements(PrimitiveType.Lines, 2 * TopLayerPoints.Length, DrawElementsType.UnsignedInt, 0);
-            //GL.BindVertexArray(0);
-
-            //RenderCenterOfElement(_shader);
         }
 
         private void GenerateTopLevel()
         {
-            TopLayerPoints = new float[6 * 14 * (TopLayerSize - 1) * (TopLayerSize - 1)];
+            TopLayerPoints = new float[6 * 8 * (TopLayerSize - 1) * (TopLayerSize - 1)];
             var TopLayerPointsHelper = new float[6 * 8 * (TopLayerSize - 1) * (TopLayerSize - 1)];
             TopLayerIndices = new uint[6 * (TopLayerSize - 1) * (TopLayerSize - 1)];
             int idx = 0;
@@ -224,7 +195,7 @@ namespace Geometric2.ModelGeneration
                 }
             }
 
-            TopLayerPoints = TangentGenerate.GenerateModelWithTangent(TopLayerPointsHelper);
+            TopLayerPoints = TopLayerPointsHelper;
         }
 
         public void RegenerateTorusVertices()
