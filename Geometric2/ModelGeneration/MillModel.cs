@@ -121,7 +121,7 @@ namespace Geometric2.ModelGeneration
             {
                 for (int j = 0; j < TopLayerSize; j++)
                 {
-                    topLayer[i, j] = random.Next(1, 5);
+                    topLayer[i, j] = random.Next(5, 8);
                 }
             }
 
