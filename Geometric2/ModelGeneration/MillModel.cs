@@ -14,8 +14,8 @@ namespace Geometric2.ModelGeneration
         public float[,] topLayer { get; set; }
 
         public int MillModelTopLayerVBO, MillModelTopLayerVAO, MillModelTopLayerEBO;
-        private int TopLayerSize = 10;
-        private int TextureTimes = 1;
+        private int TopLayerSize = 20;
+        private int TextureDensity = 100;
         private float[] TopLayerPoints;
         uint[] TopLayerIndices;
         Random random = new Random();
@@ -65,9 +65,10 @@ namespace Geometric2.ModelGeneration
 
         public override void RenderGlElement(Shader _shader, Vector3 rotationCentre)
         {
+            GenerateTopLevel();
             _shader.Use();
             //Render TopLayer
-            TempRotationQuaternion = Quaternion.FromEulerAngles((float)(2 * Math.PI * ElementRotationX / 360), (float)(2 * Math.PI * ElementRotationY / 360), (float)(2 * Math.PI * ElementRotationZ / 360));
+            //TempRotationQuaternion = Quaternion.FromEulerAngles((float)(2 * Math.PI * ElementRotationX / 360), (float)(2 * Math.PI * ElementRotationY / 360), (float)(2 * Math.PI * ElementRotationZ / 360));
             Translation = new Vector3(-(TopLayerSize-1) / 2.0f, 0, -(TopLayerSize - 1) / 2.0f);
             Matrix4 model = ModelMatrix.CreateModelMatrix(ElementScale * TempElementScale, RotationQuaternion, CenterPosition + Translation + TemporaryTranslation, rotationCentre, TempRotationQuaternion);
             _shader.SetMatrix4("model", model);
@@ -196,64 +197,6 @@ namespace Geometric2.ModelGeneration
             }
 
             TopLayerPoints = TopLayerPointsHelper;
-        }
-
-        public void RegenerateTorusVertices()
-        {
-            FillTorusGeometry();
-            GL.BindVertexArray(MillModelTopLayerVAO);
-            GL.BindBuffer(BufferTarget.ArrayBuffer, MillModelTopLayerVBO);
-            GL.BufferData(BufferTarget.ArrayBuffer, TopLayerPoints.Length * sizeof(float), TopLayerPoints, BufferUsageHint.DynamicDraw);
-            GL.BindBuffer(BufferTarget.ElementArrayBuffer, MillModelTopLayerEBO);
-            GL.BufferData(BufferTarget.ElementArrayBuffer, TopLayerIndices.Length * sizeof(uint), TopLayerIndices, BufferUsageHint.DynamicDraw);
-        }
-
-        private (float[], uint[]) GenerateTorus(double majorRadius, double minorRadius, int majorSegments, int minorSegments)
-        {
-            float[] resultVertices = new float[3 * majorSegments * minorSegments];
-            uint[] indices = new uint[4 * majorSegments * minorSegments];
-            for (int maj = 0; maj < majorSegments; maj++)
-            {
-                double majorAngle = 2 * Math.PI * maj / majorSegments;
-                for (int min = 0; min < minorSegments; min++)
-                {
-                    double minorAngle = 2 * Math.PI * min / minorSegments;
-
-                    resultVertices[3 * maj * minorSegments + 3 * min] = (float)((majorRadius + minorRadius * Math.Cos(minorAngle)) * Math.Cos(majorAngle));
-                    resultVertices[3 * maj * minorSegments + 3 * min + 1] = (float)(minorRadius * Math.Sin(minorAngle)); //(float)((majorRadius + minorRadius * Math.Cos(minorAngle)) * Math.Sin(majorAngle));
-                    resultVertices[3 * maj * minorSegments + 3 * min + 2] = (float)((majorRadius + minorRadius * Math.Cos(minorAngle)) * Math.Sin(majorAngle)); //(float)(minorRadius * Math.Sin(minorAngle));
-
-                    if (min != minorSegments - 1)
-                    {
-                        indices[4 * maj * minorSegments + 4 * min] = (uint)(maj * minorSegments + min);
-                        indices[4 * maj * minorSegments + 4 * min + 1] = (uint)(maj * minorSegments + min + 1);
-                        indices[4 * maj * minorSegments + 4 * min + 2] = (uint)(maj * minorSegments + min);
-                        var _maj = maj != majorSegments - 1 ? maj + 1 : 0;
-                        indices[4 * maj * minorSegments + 4 * min + 3] = (uint)(_maj * minorSegments + min);
-                    }
-                    else
-                    {
-                        indices[4 * maj * minorSegments + 4 * min] = (uint)(maj * minorSegments + min);
-                        indices[4 * maj * minorSegments + 4 * min + 1] = (uint)(maj * minorSegments);
-                        indices[4 * maj * minorSegments + 4 * min + 2] = (uint)(maj * minorSegments + min);
-                        var _maj = maj != majorSegments - 1 ? maj + 1 : 0;
-                        indices[4 * maj * minorSegments + 4 * min + 3] = (uint)(_maj * minorSegments + min);
-                    }
-                }
-            }
-
-            return (resultVertices, indices);
-        }
-
-        private void FillTorusGeometry()
-        {
-            var x = GenerateTorus(torus_R, torus_r, torusMajorDividions, torusMinorDividions);
-            TopLayerPoints = x.Item1;
-            TopLayerIndices = x.Item2;
-        }
-        public Vector3 Position()
-        {
-            return this.CenterPosition + this.TemporaryTranslation + this.Translation;
         }
     }
 }
