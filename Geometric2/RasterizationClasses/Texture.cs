@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 using System.Drawing.Imaging;
 using OpenTK.Graphics.OpenGL4;
 using PixelFormat = OpenTK.Graphics.OpenGL4.PixelFormat;
@@ -46,10 +47,43 @@ namespace Geometric2.RasterizationClasses
             GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
         }
 
+        public Texture(int width, int height, float[] heightmap)
+        {
+            // Generate handle
+            Handle = GL.GenTexture();
+
+            // Bind the handle
+            Use();
+
+            // Load the image
+            GL.TexImage2D(TextureTarget.Texture2D,
+                0,
+                PixelInternalFormat.R32f,
+                width,
+                height,
+                0,
+                PixelFormat.Red,
+                PixelType.Float,
+                heightmap);
+
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.LinearMipmapLinear);//LinearMipmapLinear
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
+
+            GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
+        }
+
         public void Use(TextureUnit unit = TextureUnit.Texture0)
         {
             GL.ActiveTexture(unit);
             GL.BindTexture(TextureTarget.Texture2D, Handle);
+        }
+
+        public void DeleteTexture()
+        {
+            GL.DeleteTexture(Handle);
         }
     }
 }

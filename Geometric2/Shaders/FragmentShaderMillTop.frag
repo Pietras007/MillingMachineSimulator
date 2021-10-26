@@ -22,8 +22,6 @@ in vec3 FragPos;
 in vec3 Normal;
 in vec2 TexCoords;
 
-in mat3 TBN;
-
 void main()
 {
     //Ambient

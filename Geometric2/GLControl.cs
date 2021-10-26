@@ -70,6 +70,7 @@ namespace Geometric2
 
             _millshader.SetInt("material.diffuse", 0);
             _millshader.SetInt("material.specular", 1);
+            _millshader.SetInt("heightMap", 2);
             _millshader.SetFloat("material.shininess", 16.0f);
 
             _millshader.SetVector3("light.position", camPos);
