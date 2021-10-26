@@ -16,7 +16,7 @@ namespace Geometric2.ModelGeneration
         public float[,] topLayer { get; set; }
 
         public int MillModelTopLayerVBO, MillModelTopLayerVAO, MillModelTopLayerEBO;
-        private int TopLayerSize = 50;
+        private int TopLayerSize = 200;
         private int TextureDensity = 100;
         private float[] TopLayerPoints;
         uint[] TopLayerIndices;
@@ -41,9 +41,7 @@ namespace Geometric2.ModelGeneration
 
         public MillModel(int width, int height)
         {
-            topLayer = new float[TopLayerSize, TopLayerSize];
-            //heightBitmap = new Bitmap(width, height);
-            //bitmapDataForHeightmap = heightBitmap.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+            topLayer = new float[width, height];
             CenterPosition = new Vector3(0, 0, 0);
             this.width = width;
             this.height = height;
@@ -54,7 +52,6 @@ namespace Geometric2.ModelGeneration
             texture = new Texture("./../../Resources/wood.jpg");
             specular = new Texture("./../../Resources/50specular.png");
             RegenerateTexture();
-            //FillTorusGeometry();
             GenerateTopLevel();
             MillModelTopLayerVAO = GL.GenVertexArray();
             MillModelTopLayerVBO = GL.GenBuffer();
@@ -90,11 +87,8 @@ namespace Geometric2.ModelGeneration
 
         public override void RenderGlElement(Shader _shader, Vector3 rotationCentre)
         {
-            //GenerateTopLevel();
             _shader.Use();
             RegenerateTexture();
-            //Render TopLayer
-            //TempRotationQuaternion = Quaternion.FromEulerAngles((float)(2 * Math.PI * ElementRotationX / 360), (float)(2 * Math.PI * ElementRotationY / 360), (float)(2 * Math.PI * ElementRotationZ / 360));
             Translation = new Vector3(-(TopLayerSize-1) / 2.0f, 0, -(TopLayerSize - 1) / 2.0f);
             Matrix4 model = ModelMatrix.CreateModelMatrix(ElementScale * TempElementScale, RotationQuaternion, CenterPosition + Translation + TemporaryTranslation, rotationCentre, TempRotationQuaternion);
             _shader.SetMatrix4("model", model);
@@ -115,52 +109,17 @@ namespace Geometric2.ModelGeneration
                 heightmap.DeleteTexture();
             }
 
-            //heightBitmap.Dispose();
-            //float[] x = new float[10];
-            //unsafe
-            //{
-            //    heightMapPointer = &x;
-            //}
-            //using (heightBitmap = new Bitmap(width, height))
-            //{
-            //    unsafe
-            //    {
-            //        BitmapData bitmapData = heightBitmap.LockBits(new Rectangle(0, 0, heightBitmap.Width, heightBitmap.Height), ImageLockMode.ReadWrite, heightBitmap.PixelFormat);
-
-            //        int bytesPerPixel = System.Drawing.Bitmap.GetPixelFormatSize(heightBitmap.PixelFormat) / 8;
-            //        int heightInPixels = bitmapData.Height;
-            //        int widthInBytes = bitmapData.Width * bytesPerPixel;
-            //        byte* PtrFirstPixel = (byte*)bitmapData.Scan0;
-
-            //        Parallel.For(0, heightInPixels, y =>
-            //        {
-            //            byte* currentLine = PtrFirstPixel + (y * bitmapData.Stride);
-            //            for (int x = 0; x < widthInBytes; x = x + bytesPerPixel)
-            //            {
-            //                    currentLine[x] = 0;
-            //                    currentLine[x + 1] = 0;
-            //                    currentLine[x + 2] = topLayer[x,y];
-            //                    currentLine[x + 3] = 0;
-            //            }
-            //        });
-            //        heightBitmap.UnlockBits(bitmapData);
-            //    }
-
-            //    bitmapDataForHeightmap = heightBitmap.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-
             float[] layer = new float[topLayer.Length];
             for (int i = 0; i < width; i++)
             {
                 for (int j = 0; j < height; j++)
                 {
-                    layer[i * width + j] = topLayer[j, i];
+                    var x = topLayer[i, j];
+                    layer[j * width + i] = x;
                 }
             }
 
-            //float[] rev = Array.Reverse(layer);
-
             heightmap = new Texture(width, height, layer);
-            //}
         }
 
         private void GenerateTopLevel()
@@ -171,13 +130,13 @@ namespace Geometric2.ModelGeneration
             int idx = 0;
             int indiceidx = 0;
 
-            for (int i = 0; i < TopLayerSize; i++)
-            {
-                for (int j = 0; j < TopLayerSize; j++)
-                {
-                    topLayer[i, j] = random.Next(5, 8);
-                }
-            }
+            //for (int i = 0; i < width; i++)
+            //{
+            //    for (int j = 0; j < height; j++)
+            //    {
+            //        topLayer[i, j] = random.Next(5, 6);
+            //    }
+            //}
 
             for (int i = 0; i < TopLayerSize; i++)
             {

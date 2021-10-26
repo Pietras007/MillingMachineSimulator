@@ -20,8 +20,36 @@ void main()
 {
     //gl_Position = mvp * vec4(a_Position, 1.0);
 
-    vec3 height = vec3(texture(heightMap, aTexCoords));
-    vec3 pos = vec3(a_Position.x, height.x, a_Position.z);
+
+
+    float xDiff = 1/10.0f;
+    float yDiff = 1/10.0f;
+    vec3 normal = aNormal;
+    //if(normal.x < -1.0f)
+        vec2 tHeightTexPos;
+         
+        tHeightTexPos = vec2(aTexCoords.x - xDiff, aTexCoords.y);
+        float hL = texture(heightMap, tHeightTexPos).x;
+
+        tHeightTexPos = vec2(aTexCoords.x + xDiff, aTexCoords.y);
+        float hR = texture(heightMap, tHeightTexPos).x;
+
+        tHeightTexPos = vec2(aTexCoords.x, aTexCoords.y - yDiff);
+        float hD = texture(heightMap, tHeightTexPos).x;
+
+        tHeightTexPos = vec2(aTexCoords.x, aTexCoords.y + yDiff);
+        float hU = texture(heightMap, tHeightTexPos).x;
+
+        vec3 v1 = vec3(xDiff,hL,0.0f)-vec3(-xDiff,hR,0.0f);
+        vec3 v2 = vec3(0.0f,hU,yDiff)-vec3(0.0f,hD,-yDiff);
+        
+        normal = normalize(cross(v1,v2));
+        normal.y=-normal.y;
+        normal.z=-normal.z;
+        //normal = vec3(0.0f,1.0f,0.0f);
+
+        float height = texture(heightMap, aTexCoords).x;
+    vec3 pos = vec3(a_Position.x, height, a_Position.z);
     //vec3 pos = vec3(a_Position.x, a_Position.y, a_Position.z);
     FragPos = vec3(vec4(pos, 1.0) * model);
 
@@ -31,6 +59,7 @@ void main()
 
     //Normal = normalGenerator(a, b, c);
     Normal = aNormal;
+    //Normal = normal;
     TexCoords = aTexCoords;
 
     gl_Position = vec4(pos, 1.0) * model * view * projection;
