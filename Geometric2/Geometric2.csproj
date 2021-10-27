@@ -80,6 +80,7 @@
     <Compile Include="ModelGeneration\Torus.cs" />
     <Compile Include="ModelGeneration\TransformCenterLines.cs" />
     <Compile Include="ModelGeneration\XyzLines.cs" />
+    <Compile Include="Models\InitializeDataModel.cs" />
     <Compile Include="RasterizationClasses\Camera.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>

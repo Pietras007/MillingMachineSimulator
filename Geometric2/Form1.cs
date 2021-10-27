@@ -19,6 +19,7 @@ using System.Drawing;
 using Geometric2.Global;
 using System.Xml;
 using System.Linq;
+using Geometric2.Models;
 
 namespace Geometric2
 {
@@ -27,6 +28,7 @@ namespace Geometric2
         public Form1()
         {
             InitializeComponent();
+            InitSolution();
             Thread thread = new Thread(() =>
             {
                 while (true)
@@ -37,12 +39,15 @@ namespace Geometric2
             });
 
             thread.Start();
-
             coursor = new Coursor();
-            millModel = new MillModel(2000,4000);
+            millModel = new MillModel(dataModel.Width, dataModel.Height, dataModel.Altitude);
             coursor.CoursorMode = CoursorMode.Auto;
             transformCenterLines.selectedElements = SelectedElements;
             this.glControl1.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.glControl1_MouseWheel);
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
         }
 
         private List<Vector3> drillPositions;
@@ -51,6 +56,7 @@ namespace Geometric2
         private Camera _camera;
         private Coursor coursor;
         private MillModel millModel;
+        public InitializeDataModel dataModel;
 
 
         private XyzLines xyzLines = new XyzLines();
@@ -109,6 +115,11 @@ namespace Geometric2
             }
         }
 
+        private void newToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            InitSolution();
+        }
+
         private void drillingLineCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             if (drillingLines != null)
@@ -120,6 +131,15 @@ namespace Geometric2
             {
                 millModel.DrillAll(drillingLines.drillPoints);
             }
+        }
+
+        
+
+        private void InitSolution()
+        {
+            dataModel = new InitializeDataModel();
+            InitializeData initializeData = new InitializeData(dataModel);
+            initializeData.ShowDialog();
         }
     }
 }

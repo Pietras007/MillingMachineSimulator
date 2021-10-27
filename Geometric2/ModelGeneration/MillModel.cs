@@ -35,13 +35,15 @@ namespace Geometric2.ModelGeneration
         float divider = 100.0f;
         Texture heightmap;
         int width, height;
+        float altitude;
 
-        public MillModel(int width, int height)
+        public MillModel(int width, int height, float altitude)
         {
             topLayer = new float[width, height];
             CenterPosition = new Vector3(0, 0, 0);
             this.width = width;
             this.height = height;
+            this.altitude = altitude;
         }
 
         public override void CreateGlElement(Shader _shader)
@@ -172,7 +174,7 @@ namespace Geometric2.ModelGeneration
                 List<Vector3> processedPoints = new List<Vector3>();
                 foreach (var p in loadedPositions)
                 {
-                    Vector3 point = new Vector3(p.X * 100 + 1000, p.Y, p.Z * 100 + 2000);
+                    Vector3 point = new Vector3(p.X * 100 + width/2.0f, p.Y, p.Z * 100 + height/2.0f);
                     processedPoints.Add(point);
                 }
 
@@ -257,9 +259,12 @@ namespace Geometric2.ModelGeneration
                 {
                     if (_x * _x + _y * _y <= radius * radius)
                     {
-                        if (topLayer[x + _x, z + _y] > point.Y)
+                        if (x + _x >= 0 && z + _y >= 0 && x + _x < width && z + _y < height)
                         {
-                            topLayer[x + _x, z + _y] = point.Y;
+                            if (topLayer[x + _x, z + _y] > point.Y)
+                            {
+                                topLayer[x + _x, z + _y] = point.Y;
+                            }
                         }
                     }
                 }
@@ -278,7 +283,7 @@ namespace Geometric2.ModelGeneration
             {
                 for (int j = 0; j < height; j++)
                 {
-                    topLayer[i, j] = 5;
+                    topLayer[i, j] = altitude;
                 }
             }
 
@@ -520,48 +525,6 @@ namespace Geometric2.ModelGeneration
                     RoundLayerIndices[indiceidx] = (uint)(TopLayerSize + j + 1 + amount); indiceidx++;
                 }
             }
-
-            //i = TopLayerSize;
-            //j = 0;
-            //for (j = 0; j < TopLayerSize; j++)
-            //{
-            //    RoundLayerPointsHelper[idx] = i / divider; idx++; //x
-            //    RoundLayerPointsHelper[idx] = -200; idx++; //y
-            //    RoundLayerPointsHelper[idx] = j / divider; idx++; //z
-            //    RoundLayerPointsHelper[idx] = 1; idx++; //norm x
-            //    RoundLayerPointsHelper[idx] = 0; idx++; //norm y
-            //    RoundLayerPointsHelper[idx] = 0; idx++; //norm z
-            //    RoundLayerPointsHelper[idx] = (float)i / (TopLayerSize - 1); idx++; //texCoordx
-            //    RoundLayerPointsHelper[idx] = (float)j / (TopLayerSize - 1); idx++; //texCoordy
-            //}
-
-            //for (j = 0; j < TopLayerSize; j++)
-            //{
-            //    RoundLayerPointsHelper[idx] = i / divider; idx++; //x
-            //    RoundLayerPointsHelper[idx] = 0; idx++; //y
-            //    RoundLayerPointsHelper[idx] = j / divider; idx++; //z
-            //    RoundLayerPointsHelper[idx] = 1; idx++; //norm x
-            //    RoundLayerPointsHelper[idx] = 0; idx++; //norm y
-            //    RoundLayerPointsHelper[idx] = 0; idx++; //norm z
-            //    RoundLayerPointsHelper[idx] = (float)i / (TopLayerSize - 1); idx++; //texCoordx
-            //    RoundLayerPointsHelper[idx] = (float)j / (TopLayerSize - 1); idx++; //texCoordy
-            //}
-
-            //int nr = 0;// 1 * 6 * (TopLayerSize - 1);
-
-            //for (j = 0; j < TopLayerSize; j++)
-            //{
-            //    if (i < TopLayerSize - 1 && j < TopLayerSize - 1)
-            //    {
-            //        RoundLayerIndices[indiceidx] = (uint)(j + nr); indiceidx++;
-            //        RoundLayerIndices[indiceidx] = (uint)(j + 1 + nr); indiceidx++;
-            //        RoundLayerIndices[indiceidx] = (uint)(TopLayerSize + j + nr); indiceidx++;
-
-            //        RoundLayerIndices[indiceidx] = (uint)(TopLayerSize + j + nr); indiceidx++;
-            //        RoundLayerIndices[indiceidx] = (uint)(j + 1 + nr); indiceidx++;
-            //        RoundLayerIndices[indiceidx] = (uint)(TopLayerSize + j + 1 + nr); indiceidx++;
-            //    }
-            //}
 
             RoundLayerPoints = RoundLayerPointsHelper;
         }

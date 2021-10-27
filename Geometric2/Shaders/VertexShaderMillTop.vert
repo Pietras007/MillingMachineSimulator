@@ -18,17 +18,12 @@ out vec2 TexCoords;
 vec3 normalGenerator(vec3 a, vec3 b, vec3 c);
 void main()
 {
-    //gl_Position = mvp * vec4(a_Position, 1.0);
-
-
-
     float xDiff = 1/999.0f;
     float yDiff = 1/999.0f;
     vec3 normal = aNormal;
     float height = a_Position.y;
     if(normal.y > 0)
     {
-    //if(normal.x < -1.0f)
         vec2 tHeightTexPos;
          
         tHeightTexPos = vec2(aTexCoords.x - xDiff, aTexCoords.y);
@@ -50,26 +45,19 @@ void main()
         normal.y=-normal.y;
         normal.z=-normal.z;
     }
-        //normal = vec3(0.0f,1.0f,0.0f);
+
     if(normal.y > 0 || height < -100)
     {
         height = texture(heightMap, aTexCoords).x;
     }
+
     vec3 pos = vec3(a_Position.x, height, a_Position.z);
-    //vec3 pos = vec3(a_Position.x, a_Position.y, a_Position.z);
     FragPos = vec3(vec4(pos, 1.0) * model);
 
-//    vec3 a = vec3(texture(heightMap, heightCoords1)).x;
-//    vec3 b = vec3(texture(heightMap, heightCoords2)).x;
-//    vec3 c = vec3(texture(heightMap, heightCoords3)).x;
-
-    //Normal = normalGenerator(a, b, c);
-    //Normal = aNormal;
     Normal = normal;
     TexCoords = aTexCoords;
 
     gl_Position = vec4(pos, 1.0) * model * view * projection;
-    //gl_Position = projection * view * model * vec4(a_Position, 1.0);
 }
 
 vec3 normalGenerator(vec3 a, vec3 b, vec3 c)
