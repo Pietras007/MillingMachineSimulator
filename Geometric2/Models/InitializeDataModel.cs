@@ -8,7 +8,7 @@ namespace Geometric2.Models
 {
     public class InitializeDataModel
     {
-        public int Width;
+        public int Width = -1;
         public int Height;
         public float Altitude;
         public int Divisions_X;

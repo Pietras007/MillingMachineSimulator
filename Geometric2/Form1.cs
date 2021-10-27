@@ -104,12 +104,19 @@ namespace Geometric2
                 }
 
                 drillingLines = new DrillingLines(drillPositions);
+                Element elToRemove = null;
                 foreach(var el in Elements)
                 {
                     if(el is DrillingLines)
                     {
-                        Elements.Remove(el);
+                        elToRemove = el;
                     }
+                }
+
+                if(elToRemove != null)
+                {
+                    Elements.Remove(elToRemove);
+                    drillingLineCheckBox.Checked = false;
                 }
 
                 Elements.Add(drillingLines);
@@ -145,6 +152,19 @@ namespace Geometric2
             dataModel = new InitializeDataModel();
             InitializeData initializeData = new InitializeData(dataModel);
             initializeData.ShowDialog();
+
+            if(dataModel.Width == -1)
+            {
+                Environment.Exit(Environment.ExitCode);
+            }
+            else
+            {
+                widthLabelValue.Text = (dataModel.Width / 10.0f).ToString() + " mm";
+                heightLabelValue.Text = (dataModel.Height / 10.0f).ToString() + " mm";
+                altitudeLabelValue.Text = (dataModel.Altitude * 10.0f).ToString() + " mm";
+                divisionsXLabelValue.Text = (dataModel.Divisions_X).ToString();
+                divisionsYLabelValue.Text = (dataModel.Divisions_Y).ToString();
+            }
         }
     }
 }

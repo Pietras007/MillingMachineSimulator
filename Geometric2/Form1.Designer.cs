@@ -70,7 +70,7 @@ namespace Geometric2
             // glControl1
             // 
             this.glControl1.BackColor = System.Drawing.Color.Black;
-            this.glControl1.Location = new System.Drawing.Point(171, 27);
+            this.glControl1.Location = new System.Drawing.Point(12, 24);
             this.glControl1.Name = "glControl1";
             this.glControl1.Size = new System.Drawing.Size(1280, 896);
             this.glControl1.TabIndex = 0;
@@ -101,7 +101,7 @@ namespace Geometric2
             this.fileToolStripMenuItem});
             this.menuStrip2.Location = new System.Drawing.Point(0, 0);
             this.menuStrip2.Name = "menuStrip2";
-            this.menuStrip2.Size = new System.Drawing.Size(1719, 24);
+            this.menuStrip2.Size = new System.Drawing.Size(1562, 24);
             this.menuStrip2.TabIndex = 2;
             this.menuStrip2.Text = "menuStrip2";
             // 
@@ -136,7 +136,7 @@ namespace Geometric2
             this.panel1.Controls.Add(this.cameraLightCheckBox);
             this.panel1.Controls.Add(this.progressBar);
             this.panel1.Controls.Add(this.drillingLineCheckBox);
-            this.panel1.Location = new System.Drawing.Point(1469, 51);
+            this.panel1.Location = new System.Drawing.Point(1298, 36);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(245, 869);
             this.panel1.TabIndex = 3;
@@ -375,7 +375,7 @@ namespace Geometric2
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1719, 932);
+            this.ClientSize = new System.Drawing.Size(1562, 932);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.glControl1);
             this.Controls.Add(this.menuStrip2);
