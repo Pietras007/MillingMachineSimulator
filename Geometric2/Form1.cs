@@ -40,7 +40,7 @@ namespace Geometric2
 
             thread.Start();
             coursor = new Coursor();
-            millModel = new MillModel(dataModel.Width, dataModel.Height, dataModel.Altitude);
+            millModel = new MillModel(dataModel.Width, dataModel.Height, dataModel.Altitude, dataModel.Divisions_X, dataModel.Divisions_Y);
             coursor.CoursorMode = CoursorMode.Auto;
             transformCenterLines.selectedElements = SelectedElements;
             this.glControl1.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.glControl1_MouseWheel);

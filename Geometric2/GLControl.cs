@@ -26,8 +26,8 @@ namespace Geometric2
             coursor.height = glControl1.Height;
             GL.ClearColor(Color.LightCyan);
             GL.Enable(EnableCap.DepthTest);
-            _shader = new Shader("./../../Shaders/VertexShader.vert", "./../../Shaders/FragmentShader.frag");
-            _millshader = new Shader("./../../Shaders/VertexShaderMillTop.vert", "./../../Shaders/FragmentShaderMillTop.frag");
+            _shader = new Shader("./../../../Shaders/VertexShader.vert", "./../../../Shaders/FragmentShader.frag");
+            _millshader = new Shader("./../../../Shaders/VertexShaderMillTop.vert", "./../../../Shaders/FragmentShaderMillTop.frag");
 
             coursor.CreateCoursor(_shader);
             millModel.CreateGlElement(_millshader);
