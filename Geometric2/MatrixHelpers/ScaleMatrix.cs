@@ -16,5 +16,16 @@ namespace Geometric2.MatrixHelpers
 
             return Scale;
         }
+
+        public static Matrix4 CreateScaleMatrix(Vector3 scale)
+        {
+            Matrix4 Scale = Matrix4.Identity;
+            Scale.M11 = scale.X;
+            Scale.M22 = scale.Y;
+            Scale.M33 = scale.Z;
+            Scale.M44 = 1;
+
+            return Scale;
+        }
     }
 }

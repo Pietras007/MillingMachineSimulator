@@ -32,5 +32,17 @@ namespace Geometric2.MatrixHelpers
             //return modelMatrix;
             return ScaleMatrix.CreateScaleMatrix(scale) * Matrix4.CreateFromQuaternion(rotation) * TranslationMatrix.CreateTranslationMatrix(translation) * TranslationMatrix.CreateTranslationMatrix(-rotationPoint) * Matrix4.CreateFromQuaternion(tempRotation) * Matrix4.CreateTranslation(rotationPoint);
         }
+
+        public static Matrix4 CreateModelMatrix(Vector3 scale, Quaternion rotation, Vector3 translation, Vector3 rotationPoint, Quaternion tempRotation)
+        {
+            //Matrix4 modelMatrix = Matrix4.Identity;
+            //modelMatrix = ScaleMatrix.CreateScaleMatrix(scale) * modelMatrix;
+            //modelMatrix = RotationMatrix.CreateRotationMatrix_X(rotationX) * modelMatrix;
+            //modelMatrix = RotationMatrix.CreateRotationMatrix_Y(rotationY) * modelMatrix;
+            //modelMatrix = RotationMatrix.CreateRotationMatrix_Z(rotationZ) * modelMatrix;
+            //modelMatrix = TranslationMatrix.CreateTranslationMatrix(translation) * modelMatrix;
+            //return modelMatrix;
+            return ScaleMatrix.CreateScaleMatrix(scale) * Matrix4.CreateFromQuaternion(rotation) * TranslationMatrix.CreateTranslationMatrix(translation) * TranslationMatrix.CreateTranslationMatrix(-rotationPoint) * Matrix4.CreateFromQuaternion(tempRotation) * Matrix4.CreateTranslation(rotationPoint);
+        }
     }
 }

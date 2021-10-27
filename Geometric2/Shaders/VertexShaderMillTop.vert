@@ -22,8 +22,8 @@ void main()
 
 
 
-    float xDiff = 1/10.0f;
-    float yDiff = 1/10.0f;
+    float xDiff = 1/999.0f;
+    float yDiff = 1/999.0f;
     vec3 normal = aNormal;
     //if(normal.x < -1.0f)
         vec2 tHeightTexPos;
@@ -58,8 +58,8 @@ void main()
 //    vec3 c = vec3(texture(heightMap, heightCoords3)).x;
 
     //Normal = normalGenerator(a, b, c);
-    Normal = aNormal;
-    //Normal = normal;
+    //Normal = aNormal;
+    Normal = normal;
     TexCoords = aTexCoords;
 
     gl_Position = vec4(pos, 1.0) * model * view * projection;

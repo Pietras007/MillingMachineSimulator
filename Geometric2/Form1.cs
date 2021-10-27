@@ -39,7 +39,7 @@ namespace Geometric2
             thread.Start();
 
             coursor = new Coursor();
-            millModel = new MillModel(10,10);
+            millModel = new MillModel(4000,2000);
             coursor.CoursorMode = CoursorMode.Auto;
             transformCenterLines.selectedElements = SelectedElements;
             this.glControl1.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.glControl1_MouseWheel);
@@ -116,6 +116,11 @@ namespace Geometric2
             if (drillingLines != null)
             {
                 drillingLines.DrawPolyline = drillingLineCheckBox.Checked;
+            }
+
+            if(drillingLineCheckBox.Checked)
+            {
+                millModel.DrillAll(drillingLines.drillPoints);
             }
         }
     }
