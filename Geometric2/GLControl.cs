@@ -77,13 +77,16 @@ namespace Geometric2
             _millshader.SetVector3("light.ambient", new Vector3(0.3f, 0.3f, 0.3f));
             _millshader.SetVector3("light.diffuse", new Vector3(0.5f, 0.5f, 0.5f));
             _millshader.SetVector3("light.specular", new Vector3(0.3f, 0.3f, 0.3f));
+
+            _millshader.SetFloat("xDiff", 1.0f / (float)(dataModel.Divisions_X - 1));
+            _millshader.SetFloat("yDiff", 1.0f / (float)(dataModel.Divisions_Y - 1));
             millModel.RenderGlElement(_millshader, coursor.CoursorGloalPosition);
             foreach (var el in Elements)
             {
                 _shader.Use();
                 el.RenderGlElement(_shader, coursor.CoursorGloalPosition);
             }
-           
+
         }
 
         private void glControl1_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)

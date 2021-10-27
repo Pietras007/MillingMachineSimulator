@@ -10,6 +10,8 @@ uniform sampler2D heightMap;
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
+uniform float xDiff;
+uniform float yDiff;
 
 out vec3 FragPos;
 out vec3 Normal;
@@ -18,8 +20,6 @@ out vec2 TexCoords;
 vec3 normalGenerator(vec3 a, vec3 b, vec3 c);
 void main()
 {
-    float xDiff = 1/999.0f;
-    float yDiff = 1/999.0f;
     vec3 normal = aNormal;
     float height = a_Position.y;
     if(normal.y > 0)
