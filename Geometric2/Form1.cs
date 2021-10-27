@@ -60,8 +60,6 @@ namespace Geometric2
         DrawingStatus drawingStatus = DrawingStatus.No;
         private TransformCenterLines transformCenterLines = new TransformCenterLines();
 
-        private Torus selectedTorus = null;
-
         int prev_xPosMouse = -1, prev_yPosMouse = -1;
         int torusNumber;
 

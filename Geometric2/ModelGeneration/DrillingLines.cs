@@ -21,9 +21,13 @@ namespace Geometric2.ModelGeneration
         Camera _camera;
         int width, height;
 
-        public DrillingLines(List<Vector3> drillPoints)
+        public DrillingLines(List<Vector3> _drillPoints)
         {
-            this.drillPoints = drillPoints;
+            drillPoints = new List<Vector3>();
+            foreach (Vector3 drillPoint in _drillPoints)
+            {
+                this.drillPoints.Add(drillPoint / 10);
+            }
         }
 
         public override void CreateGlElement(Shader _shader)

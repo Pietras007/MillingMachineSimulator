@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Geometric2.Functions;
 using Geometric2.Helpers;
@@ -27,7 +28,7 @@ namespace Geometric2.ModelGeneration
         Texture texture;
         Texture specular;
 
-        float divider = 10.0f;
+        float divider = 100.0f;
 
         //Bitmap heightBitmap;
         //BitmapData bitmapDataForHeightmap;
@@ -68,23 +69,23 @@ namespace Geometric2.ModelGeneration
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, MillModelTopLayerEBO);
             GL.BufferData(BufferTarget.ElementArrayBuffer, TopLayerIndices.Length * sizeof(uint), TopLayerIndices, BufferUsageHint.DynamicDraw);
             var a_Position_Location = _shader.GetAttribLocation("a_Position");
-            GL.VertexAttribPointer(a_Position_Location, 3, VertexAttribPointerType.Float, true, 14 * sizeof(float), 0);
+            GL.VertexAttribPointer(a_Position_Location, 3, VertexAttribPointerType.Float, true, 8 * sizeof(float), 0);
             GL.EnableVertexAttribArray(a_Position_Location);
             var aNormal = _shader.GetAttribLocation("aNormal");
             GL.EnableVertexAttribArray(aNormal);
-            GL.VertexAttribPointer(aNormal, 3, VertexAttribPointerType.Float, false, 14 * sizeof(float), 3 * sizeof(float));
+            GL.VertexAttribPointer(aNormal, 3, VertexAttribPointerType.Float, false, 8 * sizeof(float), 3 * sizeof(float));
             var aTexCoords = _shader.GetAttribLocation("aTexCoords");
             GL.EnableVertexAttribArray(aTexCoords);
-            GL.VertexAttribPointer(aTexCoords, 2, VertexAttribPointerType.Float, false, 14 * sizeof(float), 6 * sizeof(float));
-            var heightCoords1 = _shader.GetAttribLocation("heightCoords1");
-            GL.EnableVertexAttribArray(heightCoords1);
-            GL.VertexAttribPointer(heightCoords1, 2, VertexAttribPointerType.Float, false, 14 * sizeof(float), 8 * sizeof(float));
-            var heightCoords2 = _shader.GetAttribLocation("heightCoords2");
-            GL.EnableVertexAttribArray(heightCoords2);
-            GL.VertexAttribPointer(heightCoords2, 2, VertexAttribPointerType.Float, false, 14 * sizeof(float), 10 * sizeof(float));
-            var heightCoords3 = _shader.GetAttribLocation("heightCoords3");
-            GL.EnableVertexAttribArray(heightCoords3);
-            GL.VertexAttribPointer(heightCoords3, 2, VertexAttribPointerType.Float, false, 14 * sizeof(float), 12 * sizeof(float));
+            GL.VertexAttribPointer(aTexCoords, 2, VertexAttribPointerType.Float, false, 8 * sizeof(float), 6 * sizeof(float));
+            //var heightCoords1 = _shader.GetAttribLocation("heightCoords1");
+            //GL.EnableVertexAttribArray(heightCoords1);
+            //GL.VertexAttribPointer(heightCoords1, 2, VertexAttribPointerType.Float, false, 14 * sizeof(float), 8 * sizeof(float));
+            //var heightCoords2 = _shader.GetAttribLocation("heightCoords2");
+            //GL.EnableVertexAttribArray(heightCoords2);
+            //GL.VertexAttribPointer(heightCoords2, 2, VertexAttribPointerType.Float, false, 14 * sizeof(float), 10 * sizeof(float));
+            //var heightCoords3 = _shader.GetAttribLocation("heightCoords3");
+            //GL.EnableVertexAttribArray(heightCoords3);
+            //GL.VertexAttribPointer(heightCoords3, 2, VertexAttribPointerType.Float, false, 14 * sizeof(float), 12 * sizeof(float));
 
 
             CreateCenterOfElement(_shader);
@@ -95,11 +96,12 @@ namespace Geometric2.ModelGeneration
             _shader.Use();
             RegenerateTexture();
 
-            float scale = 0.3f;
-            Translation = new Vector3(-(TopLayerSize - 1) / (2.0f* divider * (height/(float)width)), 0, -(TopLayerSize - 1) / (2.0f * divider));
+            //Translation = new Vector3(-(TopLayerSize - 1) / (2.0f* divider * (height/(float)width)), 0, -(TopLayerSize - 1) / (2.0f * divider));
+            Translation = new Vector3(-width/200.0f, 0, -height / 200.0f); ;
 
             //Translation = new Vector3(0, 0, -100);
-            Matrix4 model = ModelMatrix.CreateModelMatrix(new Vector3(width/(float)height, 1, 1), RotationQuaternion, CenterPosition + Translation + TemporaryTranslation, rotationCentre, TempRotationQuaternion);
+            //Matrix4 model = ModelMatrix.CreateModelMatrix(new Vector3(width/10000.0f, height / 10000.0f, 1), RotationQuaternion, CenterPosition + Translation + TemporaryTranslation, rotationCentre, TempRotationQuaternion);
+            Matrix4 model = ModelMatrix.CreateModelMatrix(new Vector3(width / 1000.0f, 1, height /1000.0f), RotationQuaternion, CenterPosition + Translation + TemporaryTranslation, rotationCentre, TempRotationQuaternion);
             _shader.SetMatrix4("model", model);
             GL.BindVertexArray(MillModelTopLayerVAO);
             texture.Use();
@@ -113,7 +115,7 @@ namespace Geometric2.ModelGeneration
 
         private void RegenerateTexture()
         {
-            if (counter % 100 == 0)
+            //if (counter % 10 == 0)
             {
                 //DrillHole(new Vector3(300, 0, 1000), 50);
 
@@ -134,31 +136,35 @@ namespace Geometric2.ModelGeneration
 
                 heightmap = new Texture(width, height, layer);
             }
+
+            //counter++;
         }
 
         public void DrillAll(List<Vector3> loadedPositions)
         {
-            List<Vector3> processedPoints = new List<Vector3>();
-            foreach(var p in loadedPositions)
+            Thread thread = new Thread(() =>
             {
-                Vector3 point = new Vector3(p.X * 10 + 1000, p.Y, p.Z * 10 + 2000);
-                processedPoints.Add(point);
-            }
+                List<Vector3> processedPoints = new List<Vector3>();
+                foreach (var p in loadedPositions)
+                {
+                    Vector3 point = new Vector3(p.X * 100 + 1000, p.Y, p.Z * 100 + 2000);
+                    processedPoints.Add(point);
+                }
 
-            Vector3 prev = processedPoints.First();
-            for(int i=1;i<processedPoints.Count;i++)
-            {
-                Vector3 current = processedPoints[i];
-                Brezenham((int)prev.X, (int)prev.Z, (int)current.X, (int)current.Z, current.Y);
-                DrillHole(current, 50);
+                Vector3 prev = processedPoints.First();
+                for (int i = 1; i < processedPoints.Count; i++)
+                {
+                    Vector3 current = processedPoints[i];
+                    Brezenham((int)prev.X, (int)prev.Z, (int)current.X, (int)current.Z, current.Y, prev.Y, current.Y);
+                    prev = current;
+                }
+            });
+            thread.Start();
 
-                prev = current;
-            }
-
-            Brezenham(50, 50, 500, 500, 0);
+            //Brezenham(50, 50, 500, 500, 0);
         }
 
-        public void Brezenham(int x, int y, int x2, int y2, float height)
+        public void Brezenham(int x, int y, int x2, int y2, float height, float z_From, float z_To)
         {
             if (x != x2 || y != y2)
             {
@@ -180,10 +186,11 @@ namespace Geometric2.ModelGeneration
                 int numerator = longest >> 1;
                 for (int i = 0; i <= longest; i++)
                 {
-                    if (topLayer[x, y] > height)
-                    {
-                        topLayer[x, y] = height;
-                    }
+                    //if (topLayer[x, y] > height)
+                    //{
+                        //topLayer[x, y] = height;
+                        DrillHole(new Vector3(x, height, y), 50);
+                    //}
                     numerator += shortest;
                     if (!(numerator < longest))
                     {
@@ -198,32 +205,72 @@ namespace Geometric2.ModelGeneration
                     }
                 }
             }
+            else
+            {
+                if(z_From <= z_To)
+                {
+                    for (float i = z_From; i < z_To; i +=0.01f)
+                    {
+                        //wait
+                    }
+                }
+                else
+                {
+                    for (float i = z_From; i >= z_To; i -= 0.01f)
+                    {
+                        //wait
+                    }
+                }
+
+                DrillHole(new Vector3(x, height, y), 50);
+            }
         }
 
-        public void DrillHole(Vector3 point, float R)
+        public void DrillHole(Vector3 point, int radius)
         {
-            float x = point.X;
-            float y = point.Y;
-            float z = point.Z;
-            for(int i=0;i<width;i++)
+            int x = (int)point.X;
+            int y = (int)point.Y;
+            int z = (int)point.Z;
+
+            for (int _y = -radius; _y <= radius; _y++)
+            //Parallel.For(-radius, radius + 1, _y =>
             {
-                for(int j=0;j<height;j++)
+                for (int _x = -radius; _x <= radius; _x++)
                 {
-                    if ((x - i)* (x - i) + (z - j) * (z - j) <= R * R)
+                    if (_x * _x + _y * _y <= radius * radius)
                     {
-                        if (topLayer[i, j] > point.Y)
+                        if (topLayer[x + _x, z + _y] > point.Y)
                         {
-                            topLayer[i, j] = point.Y;
+                            topLayer[x + _x, z + _y] = point.Y;
                         }
                     }
                 }
             }
+            //);
+
+
+            //Parallel.For(0, width, i =>
+            //{
+            //    for(int j=0;j<height;j++)
+            //    {
+            //        if ((x - i)* (x - i) + (z - j) * (z - j) <= R * R)
+            //        {
+            //            if (topLayer[i, j] > point.Y)
+            //            {
+            //                topLayer[i, j] = point.Y;
+            //            }
+            //        }
+            //    }
+            //});
         }
 
         private void GenerateTopLevel()
         {
-            TopLayerPoints = new float[6 * 14 * (TopLayerSize - 1) * (TopLayerSize - 1)];
-            var TopLayerPointsHelper = new float[6 * 14 * (TopLayerSize - 1) * (TopLayerSize - 1)];
+            //TopLayerPoints = new float[6 * 8 * (TopLayerSize - 1) * (TopLayerSize - 1)];
+            //var TopLayerPointsHelper = new float[6 * 8 * (TopLayerSize - 1) * (TopLayerSize - 1)];
+
+            TopLayerPoints = new float[8 * TopLayerSize * TopLayerSize];
+            var TopLayerPointsHelper = new float[8 * TopLayerSize * TopLayerSize];
             TopLayerIndices = new uint[6 * (TopLayerSize - 1) * (TopLayerSize - 1)];
             int idx = 0;
             int indiceidx = 0;
@@ -232,7 +279,7 @@ namespace Geometric2.ModelGeneration
             {
                 for (int j = 0; j < height; j++)
                 {
-                    topLayer[i, j] = 50;
+                    topLayer[i, j] = 5;
                 }
             }
 
@@ -242,134 +289,134 @@ namespace Geometric2.ModelGeneration
             {
                 for (int j = 0; j < TopLayerSize; j++)
                 {
-                    if (i < TopLayerSize - 1 && j < TopLayerSize - 1)
-                    {
-                        Vector3 N1 = new Vector3(0, 0, 0);// NormalsGenerator.GenerateNormals(new Vector3(i, topLayer[i, j], j), new Vector3(i, topLayer[i, j + 1], j + 1), new Vector3(i + 1, topLayer[i + 1, j], j));
-
-                        TopLayerPointsHelper[idx] = i/ divider; idx++; //x
-                        TopLayerPointsHelper[idx] = topLayer[i, j]; idx++; //y
-                        TopLayerPointsHelper[idx] = j / divider; idx++; //z
-                        TopLayerPointsHelper[idx] = N1.X; idx++; //norm x
-                        TopLayerPointsHelper[idx] = N1.Y; idx++; //norm y
-                        TopLayerPointsHelper[idx] = N1.Z; idx++; //norm z
-                        TopLayerPointsHelper[idx] = (float)i / (TopLayerSize - 1); idx++; //texCoordx
-                        TopLayerPointsHelper[idx] = (float)j / (TopLayerSize - 1); idx++; //texCoordy
-                        TopLayerPointsHelper[idx] = (float)i / (TopLayerSize - 1); idx++; //height1x
-                        TopLayerPointsHelper[idx] = (float)j / (TopLayerSize - 1); idx++; //height1y
-                        TopLayerPointsHelper[idx] = (float)i / (TopLayerSize - 1); idx++; //height2x
-                        TopLayerPointsHelper[idx] = (float)(j + 1) / (TopLayerSize - 1); idx++; //height2y
-                        TopLayerPointsHelper[idx] = (float)(i + 1) / (TopLayerSize - 1); idx++; //height3x
-                        TopLayerPointsHelper[idx] = (float)j / (TopLayerSize - 1); idx++; //height3y
-
-                        TopLayerPointsHelper[idx] = i / divider; idx++; //x
-                         TopLayerPointsHelper[idx] = topLayer[i, j + 1]; idx++; //y
-                        TopLayerPointsHelper[idx] = (j + 1) / divider; idx++; //z
-                        TopLayerPointsHelper[idx] = N1.X; idx++; //norm x
-                        TopLayerPointsHelper[idx] = N1.Y; idx++; //norm y
-                        TopLayerPointsHelper[idx] = N1.Z; idx++; //norm z
-                        TopLayerPointsHelper[idx] = (float)i / (TopLayerSize - 1); idx++; //texCoordx
-                        TopLayerPointsHelper[idx] = (float)(j + 1) / (TopLayerSize - 1); idx++; //texCoordy
-                        TopLayerPointsHelper[idx] = (float)i / (TopLayerSize - 1); idx++; //height1x
-                        TopLayerPointsHelper[idx] = (float)j / (TopLayerSize - 1); idx++; //height1y
-                        TopLayerPointsHelper[idx] = (float)i / (TopLayerSize - 1); idx++; //height2x
-                        TopLayerPointsHelper[idx] = (float)(j + 1) / (TopLayerSize - 1); idx++; //height2y
-                        TopLayerPointsHelper[idx] = (float)(i + 1) / (TopLayerSize - 1); idx++; //height3x
-                        TopLayerPointsHelper[idx] = (float)j / (TopLayerSize - 1); idx++; //height3y
-
-                        TopLayerPointsHelper[idx] = (i + 1) / divider; idx++; //x
-                        TopLayerPointsHelper[idx] = topLayer[i + 1, j]; idx++; //y
-                        TopLayerPointsHelper[idx] = j / divider; idx++; //z
-                        TopLayerPointsHelper[idx] = N1.X; idx++; //norm x
-                        TopLayerPointsHelper[idx] = N1.Y; idx++; //norm y
-                        TopLayerPointsHelper[idx] = N1.Z; idx++; //norm z
-                        TopLayerPointsHelper[idx] = (float)(i + 1) / (TopLayerSize - 1); idx++; //texCoordx
-                        TopLayerPointsHelper[idx] = (float)j / (TopLayerSize - 1); idx++; //texCoordy
-                        TopLayerPointsHelper[idx] = (float)i / (TopLayerSize - 1); idx++; //height1x
-                        TopLayerPointsHelper[idx] = (float)j / (TopLayerSize - 1); idx++; //height1y
-                        TopLayerPointsHelper[idx] = (float)i / (TopLayerSize - 1); idx++; //height2x
-                        TopLayerPointsHelper[idx] = (float)(j + 1) / (TopLayerSize - 1); idx++; //height2y
-                        TopLayerPointsHelper[idx] = (float)(i + 1) / (TopLayerSize - 1); idx++; //height3x
-                        TopLayerPointsHelper[idx] = (float)j / (TopLayerSize - 1); idx++; //height3y
-
-
-                        Vector3 N2 = new Vector3(0, 0, 0);// NormalsGenerator.GenerateNormals(new Vector3(i+1, topLayer[i+1, j], j), new Vector3(i, topLayer[i, j + 1], j + 1), new Vector3(i + 1, topLayer[i + 1, j+1], j+1));
-
-                        TopLayerPointsHelper[idx] = (i + 1) / divider; idx++; //x
-                        TopLayerPointsHelper[idx] = topLayer[i + 1, j]; idx++; //y
-                        TopLayerPointsHelper[idx] = j / divider; idx++; //z
-                        TopLayerPointsHelper[idx] = N2.X; idx++; //norm x
-                        TopLayerPointsHelper[idx] = N2.Y; idx++; //norm y
-                        TopLayerPointsHelper[idx] = N2.Z; idx++; //norm z
-                        TopLayerPointsHelper[idx] = (float)(i + 1) / (TopLayerSize - 1); idx++; //texCoordx
-                        TopLayerPointsHelper[idx] = (float)j / (TopLayerSize - 1); idx++; //texCoordy
-                        TopLayerPointsHelper[idx] = (float)(i + 1) / (TopLayerSize - 1); idx++; //height1x
-                        TopLayerPointsHelper[idx] = (float)j / (TopLayerSize - 1); idx++; //height1y
-                        TopLayerPointsHelper[idx] = (float)i / (TopLayerSize - 1); idx++; //height2x
-                        TopLayerPointsHelper[idx] = (float)(j + 1) / (TopLayerSize - 1); idx++; //height2y
-                        TopLayerPointsHelper[idx] = (float)(i + 1) / (TopLayerSize - 1); idx++; //height3x
-                        TopLayerPointsHelper[idx] = (float)(j + 1) / (TopLayerSize - 1); idx++; //height3y
-
-                        TopLayerPointsHelper[idx] = i / divider; idx++; //x
-                        TopLayerPointsHelper[idx] = topLayer[i, j + 1]; idx++; //y
-                        TopLayerPointsHelper[idx] = (j + 1) / divider; idx++; //z
-                        TopLayerPointsHelper[idx] = N2.X; idx++; //norm x
-                        TopLayerPointsHelper[idx] = N2.Y; idx++; //norm y
-                        TopLayerPointsHelper[idx] = N2.Z; idx++; //norm z
-                        TopLayerPointsHelper[idx] = (float)i / (TopLayerSize - 1); idx++; //texCoordx
-                        TopLayerPointsHelper[idx] = (float)(j + 1) / (TopLayerSize - 1); idx++; //texCoordy
-                        TopLayerPointsHelper[idx] = (float)(i + 1) / (TopLayerSize - 1); idx++; //height1x
-                        TopLayerPointsHelper[idx] = (float)j / (TopLayerSize - 1); idx++; //height1y
-                        TopLayerPointsHelper[idx] = (float)i / (TopLayerSize - 1); idx++; //height2x
-                        TopLayerPointsHelper[idx] = (float)(j + 1) / (TopLayerSize - 1); idx++; //height2y
-                        TopLayerPointsHelper[idx] = (float)(i + 1) / (TopLayerSize - 1); idx++; //height3x
-                        TopLayerPointsHelper[idx] = (float)(j + 1) / (TopLayerSize - 1); idx++; //height3y
-
-                        TopLayerPointsHelper[idx] = (i + 1) / divider; idx++; //x
-                        TopLayerPointsHelper[idx] = topLayer[i + 1, j + 1]; idx++; //y
-                        TopLayerPointsHelper[idx] = (j + 1) / divider; idx++; //z
-                        TopLayerPointsHelper[idx] = N2.X; idx++; //norm x
-                        TopLayerPointsHelper[idx] = N2.Y; idx++; //norm y
-                        TopLayerPointsHelper[idx] = N2.Z; idx++; //norm z
-                        TopLayerPointsHelper[idx] = (float)(i + 1) / (TopLayerSize - 1); idx++; //texCoordx
-                        TopLayerPointsHelper[idx] = (float)(j + 1) / (TopLayerSize - 1); idx++; //texCoordy
-                        TopLayerPointsHelper[idx] = (float)(i + 1) / (TopLayerSize - 1); idx++; //height1x
-                        TopLayerPointsHelper[idx] = (float)j / (TopLayerSize - 1); idx++; //height1y
-                        TopLayerPointsHelper[idx] = (float)i / (TopLayerSize - 1); idx++; //height2x
-                        TopLayerPointsHelper[idx] = (float)(j + 1) / (TopLayerSize - 1); idx++; //height2y
-                        TopLayerPointsHelper[idx] = (float)(i + 1) / (TopLayerSize - 1); idx++; //height3x
-                        TopLayerPointsHelper[idx] = (float)(j + 1) / (TopLayerSize - 1); idx++; //height3y
-
-                        TopLayerIndices[indiceidx] = (uint)(indiceidx); indiceidx++;
-                        TopLayerIndices[indiceidx] = (uint)(indiceidx); indiceidx++;
-                        TopLayerIndices[indiceidx] = (uint)(indiceidx); indiceidx++;
-
-                        TopLayerIndices[indiceidx] = (uint)(indiceidx); indiceidx++;
-                        TopLayerIndices[indiceidx] = (uint)(indiceidx); indiceidx++;
-                        TopLayerIndices[indiceidx] = (uint)(indiceidx); indiceidx++;
-                    }
-
-
-                    //TopLayerPointsHelper[idx] = i; idx++; //x
-                    //TopLayerPointsHelper[idx] = topLayer[i, j]; idx++; //y
-                    //TopLayerPointsHelper[idx] = j; idx++; //z
-
-                    //TopLayerPointsHelper[idx] = 0; idx++; //norm x
-                    //TopLayerPointsHelper[idx] = 1; idx++; //norm y
-                    //TopLayerPointsHelper[idx] = 0; idx++; //norm z
-
-                    //TopLayerPointsHelper[idx] = (float)i / (TopLayerSize - 1); idx++; //texCoordx
-                    //TopLayerPointsHelper[idx] = (float)j / (TopLayerSize - 1); idx++; //texCoordy
-
                     //if (i < TopLayerSize - 1 && j < TopLayerSize - 1)
                     //{
-                    //    TopLayerIndices[indiceidx] = (uint)(i * TopLayerSize + j); indiceidx++;
-                    //    TopLayerIndices[indiceidx] = (uint)(i * TopLayerSize + j + 1); indiceidx++;
-                    //    TopLayerIndices[indiceidx] = (uint)((i + 1) * TopLayerSize + j); indiceidx++;
+                    //    Vector3 N1 = new Vector3(0, 0, 0);// NormalsGenerator.GenerateNormals(new Vector3(i, topLayer[i, j], j), new Vector3(i, topLayer[i, j + 1], j + 1), new Vector3(i + 1, topLayer[i + 1, j], j));
 
-                    //    TopLayerIndices[indiceidx] = (uint)((i + 1) * TopLayerSize + j); indiceidx++;
-                    //    TopLayerIndices[indiceidx] = (uint)(i * TopLayerSize + j + 1); indiceidx++;
-                    //    TopLayerIndices[indiceidx] = (uint)((i + 1) * TopLayerSize + j + 1); indiceidx++;
+                    //    TopLayerPointsHelper[idx] = i/ divider; idx++; //x
+                    //    TopLayerPointsHelper[idx] = topLayer[i, j]; idx++; //y
+                    //    TopLayerPointsHelper[idx] = j / divider; idx++; //z
+                    //    TopLayerPointsHelper[idx] = N1.X; idx++; //norm x
+                    //    TopLayerPointsHelper[idx] = N1.Y; idx++; //norm y
+                    //    TopLayerPointsHelper[idx] = N1.Z; idx++; //norm z
+                    //    TopLayerPointsHelper[idx] = (float)i / (TopLayerSize - 1); idx++; //texCoordx
+                    //    TopLayerPointsHelper[idx] = (float)j / (TopLayerSize - 1); idx++; //texCoordy
+                    //    //TopLayerPointsHelper[idx] = (float)i / (TopLayerSize - 1); idx++; //height1x
+                    //    //TopLayerPointsHelper[idx] = (float)j / (TopLayerSize - 1); idx++; //height1y
+                    //    //TopLayerPointsHelper[idx] = (float)i / (TopLayerSize - 1); idx++; //height2x
+                    //    //TopLayerPointsHelper[idx] = (float)(j + 1) / (TopLayerSize - 1); idx++; //height2y
+                    //    //TopLayerPointsHelper[idx] = (float)(i + 1) / (TopLayerSize - 1); idx++; //height3x
+                    //    //TopLayerPointsHelper[idx] = (float)j / (TopLayerSize - 1); idx++; //height3y
+
+                    //    TopLayerPointsHelper[idx] = i / divider; idx++; //x
+                    //     TopLayerPointsHelper[idx] = topLayer[i, j + 1]; idx++; //y
+                    //    TopLayerPointsHelper[idx] = (j + 1) / divider; idx++; //z
+                    //    TopLayerPointsHelper[idx] = N1.X; idx++; //norm x
+                    //    TopLayerPointsHelper[idx] = N1.Y; idx++; //norm y
+                    //    TopLayerPointsHelper[idx] = N1.Z; idx++; //norm z
+                    //    TopLayerPointsHelper[idx] = (float)i / (TopLayerSize - 1); idx++; //texCoordx
+                    //    TopLayerPointsHelper[idx] = (float)(j + 1) / (TopLayerSize - 1); idx++; //texCoordy
+                    //    //TopLayerPointsHelper[idx] = (float)i / (TopLayerSize - 1); idx++; //height1x
+                    //    //TopLayerPointsHelper[idx] = (float)j / (TopLayerSize - 1); idx++; //height1y
+                    //    //TopLayerPointsHelper[idx] = (float)i / (TopLayerSize - 1); idx++; //height2x
+                    //    //TopLayerPointsHelper[idx] = (float)(j + 1) / (TopLayerSize - 1); idx++; //height2y
+                    //    //TopLayerPointsHelper[idx] = (float)(i + 1) / (TopLayerSize - 1); idx++; //height3x
+                    //    //TopLayerPointsHelper[idx] = (float)j / (TopLayerSize - 1); idx++; //height3y
+
+                    //    TopLayerPointsHelper[idx] = (i + 1) / divider; idx++; //x
+                    //    TopLayerPointsHelper[idx] = topLayer[i + 1, j]; idx++; //y
+                    //    TopLayerPointsHelper[idx] = j / divider; idx++; //z
+                    //    TopLayerPointsHelper[idx] = N1.X; idx++; //norm x
+                    //    TopLayerPointsHelper[idx] = N1.Y; idx++; //norm y
+                    //    TopLayerPointsHelper[idx] = N1.Z; idx++; //norm z
+                    //    TopLayerPointsHelper[idx] = (float)(i + 1) / (TopLayerSize - 1); idx++; //texCoordx
+                    //    TopLayerPointsHelper[idx] = (float)j / (TopLayerSize - 1); idx++; //texCoordy
+                    //    //TopLayerPointsHelper[idx] = (float)i / (TopLayerSize - 1); idx++; //height1x
+                    //    //TopLayerPointsHelper[idx] = (float)j / (TopLayerSize - 1); idx++; //height1y
+                    //    //TopLayerPointsHelper[idx] = (float)i / (TopLayerSize - 1); idx++; //height2x
+                    //    //TopLayerPointsHelper[idx] = (float)(j + 1) / (TopLayerSize - 1); idx++; //height2y
+                    //    //TopLayerPointsHelper[idx] = (float)(i + 1) / (TopLayerSize - 1); idx++; //height3x
+                    //    //TopLayerPointsHelper[idx] = (float)j / (TopLayerSize - 1); idx++; //height3y
+
+
+                    //    Vector3 N2 = new Vector3(0, 0, 0);// NormalsGenerator.GenerateNormals(new Vector3(i+1, topLayer[i+1, j], j), new Vector3(i, topLayer[i, j + 1], j + 1), new Vector3(i + 1, topLayer[i + 1, j+1], j+1));
+
+                    //    TopLayerPointsHelper[idx] = (i + 1) / divider; idx++; //x
+                    //    TopLayerPointsHelper[idx] = topLayer[i + 1, j]; idx++; //y
+                    //    TopLayerPointsHelper[idx] = j / divider; idx++; //z
+                    //    TopLayerPointsHelper[idx] = N2.X; idx++; //norm x
+                    //    TopLayerPointsHelper[idx] = N2.Y; idx++; //norm y
+                    //    TopLayerPointsHelper[idx] = N2.Z; idx++; //norm z
+                    //    TopLayerPointsHelper[idx] = (float)(i + 1) / (TopLayerSize - 1); idx++; //texCoordx
+                    //    TopLayerPointsHelper[idx] = (float)j / (TopLayerSize - 1); idx++; //texCoordy
+                    //    //TopLayerPointsHelper[idx] = (float)(i + 1) / (TopLayerSize - 1); idx++; //height1x
+                    //    //TopLayerPointsHelper[idx] = (float)j / (TopLayerSize - 1); idx++; //height1y
+                    //    //TopLayerPointsHelper[idx] = (float)i / (TopLayerSize - 1); idx++; //height2x
+                    //    //TopLayerPointsHelper[idx] = (float)(j + 1) / (TopLayerSize - 1); idx++; //height2y
+                    //    //TopLayerPointsHelper[idx] = (float)(i + 1) / (TopLayerSize - 1); idx++; //height3x
+                    //    //TopLayerPointsHelper[idx] = (float)(j + 1) / (TopLayerSize - 1); idx++; //height3y
+
+                    //    TopLayerPointsHelper[idx] = i / divider; idx++; //x
+                    //    TopLayerPointsHelper[idx] = topLayer[i, j + 1]; idx++; //y
+                    //    TopLayerPointsHelper[idx] = (j + 1) / divider; idx++; //z
+                    //    TopLayerPointsHelper[idx] = N2.X; idx++; //norm x
+                    //    TopLayerPointsHelper[idx] = N2.Y; idx++; //norm y
+                    //    TopLayerPointsHelper[idx] = N2.Z; idx++; //norm z
+                    //    TopLayerPointsHelper[idx] = (float)i / (TopLayerSize - 1); idx++; //texCoordx
+                    //    TopLayerPointsHelper[idx] = (float)(j + 1) / (TopLayerSize - 1); idx++; //texCoordy
+                    //    //TopLayerPointsHelper[idx] = (float)(i + 1) / (TopLayerSize - 1); idx++; //height1x
+                    //    //TopLayerPointsHelper[idx] = (float)j / (TopLayerSize - 1); idx++; //height1y
+                    //    //TopLayerPointsHelper[idx] = (float)i / (TopLayerSize - 1); idx++; //height2x
+                    //    //TopLayerPointsHelper[idx] = (float)(j + 1) / (TopLayerSize - 1); idx++; //height2y
+                    //    //TopLayerPointsHelper[idx] = (float)(i + 1) / (TopLayerSize - 1); idx++; //height3x
+                    //    //TopLayerPointsHelper[idx] = (float)(j + 1) / (TopLayerSize - 1); idx++; //height3y
+
+                    //    TopLayerPointsHelper[idx] = (i + 1) / divider; idx++; //x
+                    //    TopLayerPointsHelper[idx] = topLayer[i + 1, j + 1]; idx++; //y
+                    //    TopLayerPointsHelper[idx] = (j + 1) / divider; idx++; //z
+                    //    TopLayerPointsHelper[idx] = N2.X; idx++; //norm x
+                    //    TopLayerPointsHelper[idx] = N2.Y; idx++; //norm y
+                    //    TopLayerPointsHelper[idx] = N2.Z; idx++; //norm z
+                    //    TopLayerPointsHelper[idx] = (float)(i + 1) / (TopLayerSize - 1); idx++; //texCoordx
+                    //    TopLayerPointsHelper[idx] = (float)(j + 1) / (TopLayerSize - 1); idx++; //texCoordy
+                    //    //TopLayerPointsHelper[idx] = (float)(i + 1) / (TopLayerSize - 1); idx++; //height1x
+                    //    //TopLayerPointsHelper[idx] = (float)j / (TopLayerSize - 1); idx++; //height1y
+                    //    //TopLayerPointsHelper[idx] = (float)i / (TopLayerSize - 1); idx++; //height2x
+                    //    //TopLayerPointsHelper[idx] = (float)(j + 1) / (TopLayerSize - 1); idx++; //height2y
+                    //    //TopLayerPointsHelper[idx] = (float)(i + 1) / (TopLayerSize - 1); idx++; //height3x
+                    //    //TopLayerPointsHelper[idx] = (float)(j + 1) / (TopLayerSize - 1); idx++; //height3y
+
+                    //    TopLayerIndices[indiceidx] = (uint)(indiceidx); indiceidx++;
+                    //    TopLayerIndices[indiceidx] = (uint)(indiceidx); indiceidx++;
+                    //    TopLayerIndices[indiceidx] = (uint)(indiceidx); indiceidx++;
+
+                    //    TopLayerIndices[indiceidx] = (uint)(indiceidx); indiceidx++;
+                    //    TopLayerIndices[indiceidx] = (uint)(indiceidx); indiceidx++;
+                    //    TopLayerIndices[indiceidx] = (uint)(indiceidx); indiceidx++;
                     //}
+
+
+                    TopLayerPointsHelper[idx] = i / divider; idx++; //x
+                    TopLayerPointsHelper[idx] = topLayer[i, j]; idx++; //y
+                    TopLayerPointsHelper[idx] = j / divider; idx++; //z
+
+                    TopLayerPointsHelper[idx] = 0; idx++; //norm x
+                    TopLayerPointsHelper[idx] = 1; idx++; //norm y
+                    TopLayerPointsHelper[idx] = 0; idx++; //norm z
+
+                    TopLayerPointsHelper[idx] = (float)i / (TopLayerSize - 1); idx++; //texCoordx
+                    TopLayerPointsHelper[idx] = (float)j / (TopLayerSize - 1); idx++; //texCoordy
+
+                    if (i < TopLayerSize - 1 && j < TopLayerSize - 1)
+                    {
+                        TopLayerIndices[indiceidx] = (uint)(i * TopLayerSize + j); indiceidx++;
+                        TopLayerIndices[indiceidx] = (uint)(i * TopLayerSize + j + 1); indiceidx++;
+                        TopLayerIndices[indiceidx] = (uint)((i + 1) * TopLayerSize + j); indiceidx++;
+
+                        TopLayerIndices[indiceidx] = (uint)((i + 1) * TopLayerSize + j); indiceidx++;
+                        TopLayerIndices[indiceidx] = (uint)(i * TopLayerSize + j + 1); indiceidx++;
+                        TopLayerIndices[indiceidx] = (uint)((i + 1) * TopLayerSize + j + 1); indiceidx++;
+                    }
                 }
             }
 
