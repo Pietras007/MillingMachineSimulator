@@ -72,8 +72,14 @@ namespace Geometric2
             _millshader.SetInt("material.specular", 1);
             _millshader.SetInt("heightMap", 2);
             _millshader.SetFloat("material.shininess", 16.0f);
-
-            _millshader.SetVector3("light.position", camPos);
+            if (cameraLight)
+            {
+                _millshader.SetVector3("light.position", camPos);
+            }
+            else
+            {
+                _millshader.SetVector3("light.position", new Vector3(5, dataModel.Altitude + 5, 5));
+            }
             _millshader.SetVector3("light.ambient", new Vector3(0.3f, 0.3f, 0.3f));
             _millshader.SetVector3("light.diffuse", new Vector3(0.5f, 0.5f, 0.5f));
             _millshader.SetVector3("light.specular", new Vector3(0.3f, 0.3f, 0.3f));

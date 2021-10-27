@@ -6,6 +6,19 @@ using System.Threading.Tasks;
 
 namespace Geometric2.Global
 {
+    public enum CutterType
+    {
+        Spherical,
+        Flat
+    }
+
+    public enum DrillType
+    {
+        Normal,
+        Fast,
+        Parallel
+    }
+
     public enum DrawingStatus
     {
         No,

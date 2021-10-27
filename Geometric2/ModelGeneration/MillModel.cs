@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Geometric2.Functions;
+using Geometric2.Global;
 using Geometric2.Helpers;
 using Geometric2.MatrixHelpers;
 using Geometric2.RasterizationClasses;
@@ -29,6 +30,8 @@ namespace Geometric2.ModelGeneration
         public int MillModelRoundLayerVBO, MillModelRoundLayerVAO, MillModelRoundLayerEBO;
         private float[] RoundLayerPoints;
         uint[] RoundLayerIndices;
+
+        public int simulationTick = 10;
 
         Texture texture;
         Texture specular;
@@ -169,7 +172,7 @@ namespace Geometric2.ModelGeneration
             heightmap = new Texture(width, height, layer);
         }
 
-        public void DrillAll(List<Vector3> loadedPositions)
+        public void DrillAll(List<Vector3> loadedPositions, CutterType cutterType, DrillType drillType, int radius)
         {
             Thread thread = new Thread(() =>
             {
@@ -180,18 +183,29 @@ namespace Geometric2.ModelGeneration
                     processedPoints.Add(point);
                 }
 
-                Vector3 prev = processedPoints.First();
-                for (int i = 1; i < processedPoints.Count; i++)
+                if (drillType == DrillType.Parallel)
                 {
-                    Vector3 current = processedPoints[i];
-                    Brezenham((int)prev.X, (int)prev.Z, (int)current.X, (int)current.Z, current.Y, prev.Y, current.Y);
-                    prev = current;
+                    Parallel.For(1, processedPoints.Count, i =>
+                    {
+                        Vector3 prev = processedPoints[i - 1];
+                        Vector3 current = processedPoints[i];
+                        Brezenham((int)prev.X, (int)prev.Z, (int)current.X, (int)current.Z, current.Y, prev.Y, current.Y, cutterType, drillType, radius);
+                    });
+                }
+                else
+                {
+                    for (int i = 1; i < processedPoints.Count; i++)
+                    {
+                        Vector3 prev = processedPoints[i - 1];
+                        Vector3 current = processedPoints[i];
+                        Brezenham((int)prev.X, (int)prev.Z, (int)current.X, (int)current.Z, current.Y, prev.Y, current.Y, cutterType, drillType, radius);
+                    }
                 }
             });
             thread.Start();
         }
 
-        public void Brezenham(int x, int y, int x2, int y2, float height, float z_From, float z_To)
+        public void Brezenham(int x, int y, int x2, int y2, float height, float z_From, float z_To, CutterType cutterType, DrillType drillType, int radius)
         {
             if (x != x2 || y != y2)
             {
@@ -211,9 +225,16 @@ namespace Geometric2.ModelGeneration
                     dx2 = 0;
                 }
                 int numerator = longest >> 1;
+                float z_Diff = z_To - z_From;
+                float z_DiffPart = z_Diff / longest;
                 for (int i = 0; i <= longest; i++)
                 {
-                    DrillHole(new Vector3(x, height, y), 50);
+                    DrillHole(new Vector3(x, z_From + i * z_DiffPart, y), radius, cutterType);
+                    if(drillType == DrillType.Normal)
+                    {
+                        Thread.Sleep(simulationTick);
+                    }
+
                     numerator += shortest;
                     if (!(numerator < longest))
                     {
@@ -230,26 +251,33 @@ namespace Geometric2.ModelGeneration
             }
             else
             {
-                //if (z_From <= z_To)
-                //{
-                //    for (float i = z_From; i < z_To; i += 0.01f)
-                //    {
-                //        //wait
-                //    }
-                //}
-                //else
-                //{
-                //    for (float i = z_From; i >= z_To; i -= 0.01f)
-                //    {
-                //        //wait
-                //    }
-                //}
+                if (drillType == DrillType.Normal)
+                {
+                    if (z_From <= z_To)
+                    {
+                        for (float i = z_From; i < z_To; i += 0.01f)
+                        {
+                            DrillHole(new Vector3(x, i, y), radius, cutterType);
+                        }
+                    }
+                    else
+                    {
+                        for (float i = z_From; i >= z_To; i -= 0.01f)
+                        {
+                            DrillHole(new Vector3(x, i, y), radius, cutterType);
+                        }
+                    }
 
-                DrillHole(new Vector3(x, height, y), 50);
+                    Thread.Sleep(simulationTick);
+                }
+                else
+                {
+                    DrillHole(new Vector3(x, height, y), radius, cutterType);
+                }
             }
         }
 
-        public void DrillHole(Vector3 point, int radius)
+        public void DrillHole(Vector3 point, int radius, CutterType cutterType)
         {
             int x = (int)point.X;
             int y = (int)point.Y;

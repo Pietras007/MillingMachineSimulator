@@ -48,6 +48,7 @@ namespace Geometric2
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            cameraLightCheckBox.Checked = true;
         }
 
         private List<Vector3> drillPositions;
@@ -57,6 +58,7 @@ namespace Geometric2
         private Coursor coursor;
         private MillModel millModel;
         public InitializeDataModel dataModel;
+        private bool cameraLight = true;
 
 
         private XyzLines xyzLines = new XyzLines();
@@ -129,11 +131,14 @@ namespace Geometric2
 
             if(drillingLineCheckBox.Checked)
             {
-                millModel.DrillAll(drillingLines.drillPoints);
+                //millModel.DrillAll(drillingLines.drillPoints);
             }
         }
 
-        
+        private void cameraLightCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            cameraLight = cameraLightCheckBox.Checked;
+        }
 
         private void InitSolution()
         {
