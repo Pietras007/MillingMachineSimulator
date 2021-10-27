@@ -25,12 +25,6 @@ namespace Geometric2.ModelGeneration
         Texture specular;
         float divider = 100.0f;
         Texture heightmap;
-
-        public float torus_R = 2.2f;
-        public float torus_r = 1.4f;
-        public int torusMajorDividions = 6;
-        public int torusMinorDividions = 6;
-        public int torusNumber;
         int width, height;
 
         public MillModel(int width, int height)
