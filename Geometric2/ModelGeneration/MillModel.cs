@@ -115,7 +115,7 @@ namespace Geometric2.ModelGeneration
         {
             if (counter % 100 == 0)
             {
-                DrillHole(new Vector3(300, 0, 1000), 50);
+                //DrillHole(new Vector3(300, 0, 1000), 50);
 
                 if (heightmap != null)
                 {
@@ -141,7 +141,7 @@ namespace Geometric2.ModelGeneration
             List<Vector3> processedPoints = new List<Vector3>();
             foreach(var p in loadedPositions)
             {
-                Vector3 point = new Vector3(p.X * 10 + 2000, p.Y * 10, p.Z * 10 + 1000);
+                Vector3 point = new Vector3(p.X * 10 + 1000, p.Y, p.Z * 10 + 2000);
                 processedPoints.Add(point);
             }
 
@@ -149,7 +149,54 @@ namespace Geometric2.ModelGeneration
             for(int i=1;i<processedPoints.Count;i++)
             {
                 Vector3 current = processedPoints[i];
+                Brezenham((int)prev.X, (int)prev.Z, (int)current.X, (int)current.Z, current.Y);
                 DrillHole(current, 50);
+
+                prev = current;
+            }
+
+            Brezenham(50, 50, 500, 500, 0);
+        }
+
+        public void Brezenham(int x, int y, int x2, int y2, float height)
+        {
+            if (x != x2 || y != y2)
+            {
+                int w = x2 - x;
+                int h = y2 - y;
+                int dx1 = 0, dy1 = 0, dx2 = 0, dy2 = 0;
+                if (w < 0) dx1 = -1; else if (w > 0) dx1 = 1;
+                if (h < 0) dy1 = -1; else if (h > 0) dy1 = 1;
+                if (w < 0) dx2 = -1; else if (w > 0) dx2 = 1;
+                int longest = Math.Abs(w);
+                int shortest = Math.Abs(h);
+                if (!(longest > shortest))
+                {
+                    longest = Math.Abs(h);
+                    shortest = Math.Abs(w);
+                    if (h < 0) dy2 = -1; else if (h > 0) dy2 = 1;
+                    dx2 = 0;
+                }
+                int numerator = longest >> 1;
+                for (int i = 0; i <= longest; i++)
+                {
+                    if (topLayer[x, y] > height)
+                    {
+                        topLayer[x, y] = height;
+                    }
+                    numerator += shortest;
+                    if (!(numerator < longest))
+                    {
+                        numerator -= longest;
+                        x += dx1;
+                        y += dy1;
+                    }
+                    else
+                    {
+                        x += dx2;
+                        y += dy2;
+                    }
+                }
             }
         }
 
@@ -164,7 +211,10 @@ namespace Geometric2.ModelGeneration
                 {
                     if ((x - i)* (x - i) + (z - j) * (z - j) <= R * R)
                     {
-                        topLayer[i, j] = 0;
+                        if (topLayer[i, j] > point.Y)
+                        {
+                            topLayer[i, j] = point.Y;
+                        }
                     }
                 }
             }

@@ -39,7 +39,7 @@ namespace Geometric2
             thread.Start();
 
             coursor = new Coursor();
-            millModel = new MillModel(4000,2000);
+            millModel = new MillModel(2000,4000);
             coursor.CoursorMode = CoursorMode.Auto;
             transformCenterLines.selectedElements = SelectedElements;
             this.glControl1.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.glControl1_MouseWheel);
