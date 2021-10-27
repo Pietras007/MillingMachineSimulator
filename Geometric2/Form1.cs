@@ -208,7 +208,7 @@ namespace Geometric2
 
         private void drillButton_Click(object sender, EventArgs e)
         {
-            millModel.DrillAll(drillPositions, cutterType, drillType, radious);
+            millModel.DrillAll(drillingLines.drillPoints, cutterType, drillType, radious);
         }
 
         private void normalRadioButton_CheckedChanged(object sender, EventArgs e)
@@ -234,6 +234,20 @@ namespace Geometric2
         private void flatRadioButton_CheckedChanged(object sender, EventArgs e)
         {
             cutterType = CutterType.Flat;
+        }
+
+        private void clearToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if(millModel != null && millModel.topLayer != null)
+            {
+                for(int i=0;i<dataModel.Width;i++)
+                {
+                    for(int j=0;j<dataModel.Height;j++)
+                    {
+                        millModel.topLayer[i, j] = dataModel.Altitude;
+                    }
+                }
+            }
         }
 
         private void InitSolution()

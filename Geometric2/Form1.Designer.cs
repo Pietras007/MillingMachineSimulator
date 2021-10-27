@@ -35,6 +35,7 @@ namespace Geometric2
             this.menuStrip2 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.clearToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1 = new System.Windows.Forms.Panel();
             this.drillButton = new System.Windows.Forms.Button();
@@ -112,6 +113,7 @@ namespace Geometric2
             // 
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.newToolStripMenuItem,
+            this.clearToolStripMenuItem,
             this.loadToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
@@ -120,14 +122,21 @@ namespace Geometric2
             // newToolStripMenuItem
             // 
             this.newToolStripMenuItem.Name = "newToolStripMenuItem";
-            this.newToolStripMenuItem.Size = new System.Drawing.Size(100, 22);
+            this.newToolStripMenuItem.Size = new System.Drawing.Size(101, 22);
             this.newToolStripMenuItem.Text = "New";
             this.newToolStripMenuItem.Click += new System.EventHandler(this.newToolStripMenuItem_Click);
+            // 
+            // clearToolStripMenuItem
+            // 
+            this.clearToolStripMenuItem.Name = "clearToolStripMenuItem";
+            this.clearToolStripMenuItem.Size = new System.Drawing.Size(101, 22);
+            this.clearToolStripMenuItem.Text = "Clear";
+            this.clearToolStripMenuItem.Click += new System.EventHandler(this.clearToolStripMenuItem_Click);
             // 
             // loadToolStripMenuItem
             // 
             this.loadToolStripMenuItem.Name = "loadToolStripMenuItem";
-            this.loadToolStripMenuItem.Size = new System.Drawing.Size(100, 22);
+            this.loadToolStripMenuItem.Size = new System.Drawing.Size(101, 22);
             this.loadToolStripMenuItem.Text = "Load";
             this.loadToolStripMenuItem.Click += new System.EventHandler(this.loadToolStripMenuItem_Click);
             // 
@@ -306,10 +315,10 @@ namespace Geometric2
             this.parallelRadioButton.AutoSize = true;
             this.parallelRadioButton.Location = new System.Drawing.Point(21, 71);
             this.parallelRadioButton.Name = "parallelRadioButton";
-            this.parallelRadioButton.Size = new System.Drawing.Size(59, 17);
+            this.parallelRadioButton.Size = new System.Drawing.Size(137, 17);
             this.parallelRadioButton.TabIndex = 2;
             this.parallelRadioButton.TabStop = true;
-            this.parallelRadioButton.Text = "Parallel";
+            this.parallelRadioButton.Text = "Parallel (no error check)";
             this.parallelRadioButton.UseVisualStyleBackColor = true;
             this.parallelRadioButton.CheckedChanged += new System.EventHandler(this.parallelRadioButton_CheckedChanged);
             // 
@@ -471,6 +480,7 @@ namespace Geometric2
         private System.Windows.Forms.Label radiousLabel;
         private System.Windows.Forms.TextBox radiousTextBox;
         private System.Windows.Forms.Button drillButton;
+        private System.Windows.Forms.ToolStripMenuItem clearToolStripMenuItem;
     }
 }
 
