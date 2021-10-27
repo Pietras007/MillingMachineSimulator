@@ -104,7 +104,6 @@ namespace Geometric2
                         torusNumber++;
                         torus.CreateGlElement(_shader);
                         Elements.Add(torus);
-                        selectedTorus = torus;
                         break;
                 }
             }

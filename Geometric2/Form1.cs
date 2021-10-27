@@ -32,7 +32,7 @@ namespace Geometric2
                 while (true)
                 {
                     glControl1.Invalidate();
-                    //Thread.Sleep(16);
+                    Thread.Sleep(16);
                 }
             });
 
