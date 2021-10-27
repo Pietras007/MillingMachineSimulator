@@ -37,6 +37,9 @@ namespace Geometric2
             this.newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.drillButton = new System.Windows.Forms.Button();
+            this.radiousLabel = new System.Windows.Forms.Label();
+            this.radiousTextBox = new System.Windows.Forms.TextBox();
             this.panel4 = new System.Windows.Forms.Panel();
             this.divisionsYLabelValue = new System.Windows.Forms.Label();
             this.divisionsXLabelValue = new System.Windows.Forms.Label();
@@ -130,6 +133,9 @@ namespace Geometric2
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.drillButton);
+            this.panel1.Controls.Add(this.radiousLabel);
+            this.panel1.Controls.Add(this.radiousTextBox);
             this.panel1.Controls.Add(this.panel4);
             this.panel1.Controls.Add(this.panel3);
             this.panel1.Controls.Add(this.panel2);
@@ -140,6 +146,33 @@ namespace Geometric2
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(245, 869);
             this.panel1.TabIndex = 3;
+            // 
+            // drillButton
+            // 
+            this.drillButton.Location = new System.Drawing.Point(36, 526);
+            this.drillButton.Name = "drillButton";
+            this.drillButton.Size = new System.Drawing.Size(172, 32);
+            this.drillButton.TabIndex = 7;
+            this.drillButton.Text = "Drill";
+            this.drillButton.UseVisualStyleBackColor = true;
+            this.drillButton.Click += new System.EventHandler(this.drillButton_Click);
+            // 
+            // radiousLabel
+            // 
+            this.radiousLabel.AutoSize = true;
+            this.radiousLabel.Location = new System.Drawing.Point(28, 405);
+            this.radiousLabel.Name = "radiousLabel";
+            this.radiousLabel.Size = new System.Drawing.Size(74, 13);
+            this.radiousLabel.TabIndex = 6;
+            this.radiousLabel.Text = "Radious (mm):";
+            // 
+            // radiousTextBox
+            // 
+            this.radiousTextBox.Location = new System.Drawing.Point(108, 402);
+            this.radiousTextBox.Name = "radiousTextBox";
+            this.radiousTextBox.Size = new System.Drawing.Size(114, 20);
+            this.radiousTextBox.TabIndex = 5;
+            this.radiousTextBox.TextChanged += new System.EventHandler(this.radiousTextBox_TextChanged);
             // 
             // panel4
             // 
@@ -278,6 +311,7 @@ namespace Geometric2
             this.parallelRadioButton.TabStop = true;
             this.parallelRadioButton.Text = "Parallel";
             this.parallelRadioButton.UseVisualStyleBackColor = true;
+            this.parallelRadioButton.CheckedChanged += new System.EventHandler(this.parallelRadioButton_CheckedChanged);
             // 
             // quickRadioButton
             // 
@@ -289,6 +323,7 @@ namespace Geometric2
             this.quickRadioButton.TabStop = true;
             this.quickRadioButton.Text = "Quick";
             this.quickRadioButton.UseVisualStyleBackColor = true;
+            this.quickRadioButton.CheckedChanged += new System.EventHandler(this.quickRadioButton_CheckedChanged);
             // 
             // normalRadioButton
             // 
@@ -300,6 +335,7 @@ namespace Geometric2
             this.normalRadioButton.TabStop = true;
             this.normalRadioButton.Text = "Normal";
             this.normalRadioButton.UseVisualStyleBackColor = true;
+            this.normalRadioButton.CheckedChanged += new System.EventHandler(this.normalRadioButton_CheckedChanged);
             // 
             // panel2
             // 
@@ -330,6 +366,7 @@ namespace Geometric2
             this.flatRadioButton.TabStop = true;
             this.flatRadioButton.Text = "Flat";
             this.flatRadioButton.UseVisualStyleBackColor = true;
+            this.flatRadioButton.CheckedChanged += new System.EventHandler(this.flatRadioButton_CheckedChanged);
             // 
             // sphericalRadioButton
             // 
@@ -341,11 +378,12 @@ namespace Geometric2
             this.sphericalRadioButton.TabStop = true;
             this.sphericalRadioButton.Text = "Spherical";
             this.sphericalRadioButton.UseVisualStyleBackColor = true;
+            this.sphericalRadioButton.CheckedChanged += new System.EventHandler(this.sphericalRadioButton_CheckedChanged);
             // 
             // cameraLightCheckBox
             // 
             this.cameraLightCheckBox.AutoSize = true;
-            this.cameraLightCheckBox.Location = new System.Drawing.Point(123, 635);
+            this.cameraLightCheckBox.Location = new System.Drawing.Point(108, 477);
             this.cameraLightCheckBox.Name = "cameraLightCheckBox";
             this.cameraLightCheckBox.Size = new System.Drawing.Size(88, 17);
             this.cameraLightCheckBox.TabIndex = 2;
@@ -355,7 +393,7 @@ namespace Geometric2
             // 
             // progressBar
             // 
-            this.progressBar.Location = new System.Drawing.Point(12, 832);
+            this.progressBar.Location = new System.Drawing.Point(12, 573);
             this.progressBar.Name = "progressBar";
             this.progressBar.Size = new System.Drawing.Size(226, 23);
             this.progressBar.TabIndex = 1;
@@ -363,7 +401,7 @@ namespace Geometric2
             // drillingLineCheckBox
             // 
             this.drillingLineCheckBox.AutoSize = true;
-            this.drillingLineCheckBox.Location = new System.Drawing.Point(123, 602);
+            this.drillingLineCheckBox.Location = new System.Drawing.Point(108, 444);
             this.drillingLineCheckBox.Name = "drillingLineCheckBox";
             this.drillingLineCheckBox.Size = new System.Drawing.Size(85, 17);
             this.drillingLineCheckBox.TabIndex = 0;
@@ -430,6 +468,9 @@ namespace Geometric2
         private System.Windows.Forms.Label divisions_Y_Label;
         private System.Windows.Forms.Label drillTypeLabel;
         private System.Windows.Forms.Label cutterLabel;
+        private System.Windows.Forms.Label radiousLabel;
+        private System.Windows.Forms.TextBox radiousTextBox;
+        private System.Windows.Forms.Button drillButton;
     }
 }
 

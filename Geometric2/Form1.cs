@@ -49,6 +49,8 @@ namespace Geometric2
         private void Form1_Load(object sender, EventArgs e)
         {
             cameraLightCheckBox.Checked = true;
+            radiousTextBox.Text = "5.0";
+            normalRadioButton.Checked = true;
         }
 
         private List<Vector3> drillPositions;
@@ -59,6 +61,9 @@ namespace Geometric2
         private MillModel millModel;
         public InitializeDataModel dataModel;
         private bool cameraLight = true;
+        DrillType drillType = DrillType.Normal;
+        CutterType cutterType = CutterType.Spherical;
+        int radious = 50;
 
 
         private XyzLines xyzLines = new XyzLines();
@@ -78,9 +83,10 @@ namespace Geometric2
             openFileDialog.FilterIndex = 2;
             openFileDialog.Title = "Select Paths File";
             openFileDialog.RestoreDirectory = true;
+            string fileName = "";
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
-                string fileName = openFileDialog.FileName;
+                fileName = openFileDialog.FileName;
                 List<string> file = new List<string>();
                 drillPositions = new List<Vector3>();
                 foreach (string line in System.IO.File.ReadLines(fileName))
@@ -119,6 +125,47 @@ namespace Geometric2
                     drillingLineCheckBox.Checked = false;
                 }
 
+                string fileExt = fileName.Split('.').LastOrDefault();
+                if(fileExt.Length == 3)
+                {
+                    char drill = fileExt[0];
+                    if(drill == 'k')
+                    {
+                        cutterType = CutterType.Spherical;
+                    }
+                    else
+                    {
+                        cutterType = CutterType.Flat;
+                    }
+
+                    string size = fileExt[1].ToString() + fileExt[2].ToString();
+                    int r;
+                    if (int.TryParse(size, out r))
+                    {
+                        radious = r * 10;
+                    }
+                    else
+                    {
+                        radious = 50;
+                    }
+                }
+                else
+                {
+                    cutterType = CutterType.Spherical;
+                    radious = 50;
+                }
+
+                if(cutterType == CutterType.Spherical)
+                {
+                    sphericalRadioButton.Checked = true;
+                }
+                else
+                {
+                    flatRadioButton.Checked = true;
+                }
+
+                radiousTextBox.Text = (radious / 10.0f).ToString();
+
                 Elements.Add(drillingLines);
                 drillingLines.CreateGlElement(_shader);
             }
@@ -135,16 +182,58 @@ namespace Geometric2
             {
                 drillingLines.DrawPolyline = drillingLineCheckBox.Checked;
             }
-
-            if(drillingLineCheckBox.Checked)
-            {
-                //millModel.DrillAll(drillingLines.drillPoints);
-            }
         }
 
         private void cameraLightCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             cameraLight = cameraLightCheckBox.Checked;
+        }
+
+        private void radiousTextBox_TextChanged(object sender, EventArgs e)
+        {
+            float r;
+            if (float.TryParse(radiousTextBox.Text, out r))
+            {
+                radious = (int)(r * 10);
+                if (radiousTextBox.Text.Contains(".") && radiousTextBox.Text.Split('.').LastOrDefault().Length > 1 || radiousTextBox.Text.Split('.').Length > 2)
+                {
+                    radiousTextBox.Text = (radious / 10.0f).ToString();
+                }
+            }
+            else
+            {
+                radiousTextBox.Text = (radious / 10.0f).ToString();
+            }
+        }
+
+        private void drillButton_Click(object sender, EventArgs e)
+        {
+            millModel.DrillAll(drillPositions, cutterType, drillType, radious);
+        }
+
+        private void normalRadioButton_CheckedChanged(object sender, EventArgs e)
+        {
+            drillType = DrillType.Normal;
+        }
+
+        private void quickRadioButton_CheckedChanged(object sender, EventArgs e)
+        {
+            drillType = DrillType.Fast;
+        }
+
+        private void parallelRadioButton_CheckedChanged(object sender, EventArgs e)
+        {
+            drillType = DrillType.Parallel;
+        }
+
+        private void sphericalRadioButton_CheckedChanged(object sender, EventArgs e)
+        {
+            cutterType = CutterType.Spherical;
+        }
+
+        private void flatRadioButton_CheckedChanged(object sender, EventArgs e)
+        {
+            cutterType = CutterType.Flat;
         }
 
         private void InitSolution()
