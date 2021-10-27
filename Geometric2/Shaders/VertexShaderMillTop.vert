@@ -25,6 +25,9 @@ void main()
     float xDiff = 1/999.0f;
     float yDiff = 1/999.0f;
     vec3 normal = aNormal;
+    float height = a_Position.y;
+    if(normal.y > 0)
+    {
     //if(normal.x < -1.0f)
         vec2 tHeightTexPos;
          
@@ -46,9 +49,12 @@ void main()
         normal = normalize(cross(v1,v2));
         normal.y=-normal.y;
         normal.z=-normal.z;
+    }
         //normal = vec3(0.0f,1.0f,0.0f);
-
-        float height = texture(heightMap, aTexCoords).x;
+    if(normal.y > 0 || height < -100)
+    {
+        height = texture(heightMap, aTexCoords).x;
+    }
     vec3 pos = vec3(a_Position.x, height, a_Position.z);
     //vec3 pos = vec3(a_Position.x, a_Position.y, a_Position.z);
     FragPos = vec3(vec4(pos, 1.0) * model);

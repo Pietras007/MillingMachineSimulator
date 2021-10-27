@@ -61,6 +61,12 @@
     <Compile Include="Global\Constants.cs" />
     <Compile Include="Global\Enums.cs" />
     <Compile Include="Helpers\ColorHelper.cs" />
+    <Compile Include="InitializeData.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="InitializeData.Designer.cs">
+      <DependentUpon>InitializeData.cs</DependentUpon>
+    </Compile>
     <Compile Include="MatrixHelpers\ModelMatrix.cs" />
     <Compile Include="MatrixHelpers\ProjectionMatrix.cs" />
     <Compile Include="MatrixHelpers\RotationMatrix.cs" />
@@ -88,6 +94,9 @@
     <None Include="Shaders\FragmentShaderMillTop.frag" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="InitializeData.resx">
+      <DependentUpon>InitializeData.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
