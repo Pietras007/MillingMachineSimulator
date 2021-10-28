@@ -51,6 +51,7 @@ namespace Geometric2
             cameraLightCheckBox.Checked = true;
             radiousTextBox.Text = "5.0";
             normalRadioButton.Checked = true;
+            drillButton.Enabled = false;
         }
 
         private List<Vector3> drillPositions;
@@ -165,6 +166,7 @@ namespace Geometric2
                 }
 
                 radiousTextBox.Text = (radious / 10.0f).ToString();
+                drillButton.Enabled = true;
 
                 Elements.Add(drillingLines);
                 drillingLines.CreateGlElement(_shader);

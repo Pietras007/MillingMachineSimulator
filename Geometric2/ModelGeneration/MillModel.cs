@@ -179,7 +179,7 @@ namespace Geometric2.ModelGeneration
                 List<Vector3> processedPoints = new List<Vector3>();
                 foreach (var p in loadedPositions)
                 {
-                    Vector3 point = new Vector3(p.X * 100 + width/2.0f, p.Y, p.Z * 100 + height/2.0f);
+                    Vector3 point = new Vector3(p.X * 100 + width / 2.0f, p.Y, p.Z * 100 + height / 2.0f);
                     processedPoints.Add(point);
                 }
 
@@ -230,7 +230,7 @@ namespace Geometric2.ModelGeneration
                 for (int i = 0; i <= longest; i++)
                 {
                     DrillHole(new Vector3(x, z_From + i * z_DiffPart, y), radius, cutterType);
-                    if(drillType == DrillType.Normal)
+                    if (drillType == DrillType.Normal)
                     {
                         Thread.Sleep(simulationTick);
                     }
@@ -280,20 +280,36 @@ namespace Geometric2.ModelGeneration
         public void DrillHole(Vector3 point, int radius, CutterType cutterType)
         {
             int x = (int)point.X;
-            int y = (int)point.Y;
+            float y = point.Y;
             int z = (int)point.Z;
+            int radius_2 = radius / 2;
 
-            for (int _y = -radius; _y <= radius; _y++)
+            for (int _y = -radius_2; _y <= radius_2; _y++)
             {
-                for (int _x = -radius; _x <= radius; _x++)
+                for (int _x = -radius_2; _x <= radius_2; _x++)
                 {
-                    if (_x * _x + _y * _y <= radius * radius)
+                    if (_x * _x + _y * _y <= radius_2 * radius_2)
                     {
                         if (x + _x >= 0 && z + _y >= 0 && x + _x < width && z + _y < height)
                         {
-                            if (topLayer[x + _x, z + _y] > point.Y)
+                            float yb = y;
+                            if (cutterType == CutterType.Spherical)
                             {
-                                topLayer[x + _x, z + _y] = point.Y;
+                                int xa = x;
+                                float ya = y*100 + radius_2;
+                                int za = z;
+
+                                int xb = x + _x;
+                                int zb = z + _y;
+
+                                int val = radius_2 * radius_2 - (xb - xa) * (xb - xa) - (zb - za) * (zb - za);
+                                yb = -(float)Math.Sqrt(val) + ya;
+                                yb /= 100;
+                            }
+
+                            if (topLayer[x + _x, z + _y] > yb)
+                            {
+                                topLayer[x + _x, z + _y] = yb;
                             }
                         }
                     }
@@ -383,9 +399,9 @@ namespace Geometric2.ModelGeneration
         //For round
         private void GenerateRoundLevel()
         {
-            RoundLayerPoints = new float[8 * (4 * TopLayerX + 4* TopLayerY)];
+            RoundLayerPoints = new float[8 * (4 * TopLayerX + 4 * TopLayerY)];
             var RoundLayerPointsHelper = new float[RoundLayerPoints.Length];
-            RoundLayerIndices = new uint[4 * (3 * (TopLayerX - 1) + 3* (TopLayerY - 1))];
+            RoundLayerIndices = new uint[4 * (3 * (TopLayerX - 1) + 3 * (TopLayerY - 1))];
             int idx = 0;
             int indiceidx = 0;
 
@@ -541,7 +557,7 @@ namespace Geometric2.ModelGeneration
                 RoundLayerPointsHelper[idx] = (float)j / (TopLayerY - 1); idx++; //texCoordy
             }
 
-            amount = 4 * TopLayerY + 2* TopLayerX;
+            amount = 4 * TopLayerY + 2 * TopLayerX;
             for (j = 0; j < TopLayerX; j++)
             {
                 if (j < TopLayerX - 1)
