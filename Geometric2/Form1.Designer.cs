@@ -38,6 +38,10 @@ namespace Geometric2
             this.clearToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.drillHeightLabel = new System.Windows.Forms.Label();
+            this.drillHeightTextBox = new System.Windows.Forms.TextBox();
+            this.simulationTickLabel = new System.Windows.Forms.Label();
+            this.simulationTickTrackBar = new System.Windows.Forms.TrackBar();
             this.drillButton = new System.Windows.Forms.Button();
             this.radiousLabel = new System.Windows.Forms.Label();
             this.radiousTextBox = new System.Windows.Forms.TextBox();
@@ -64,8 +68,10 @@ namespace Geometric2
             this.cameraLightCheckBox = new System.Windows.Forms.CheckBox();
             this.progressBar = new System.Windows.Forms.ProgressBar();
             this.drillingLineCheckBox = new System.Windows.Forms.CheckBox();
+            this.errorLabel = new System.Windows.Forms.Label();
             this.menuStrip2.SuspendLayout();
             this.panel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.simulationTickTrackBar)).BeginInit();
             this.panel4.SuspendLayout();
             this.panel3.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -122,26 +128,31 @@ namespace Geometric2
             // newToolStripMenuItem
             // 
             this.newToolStripMenuItem.Name = "newToolStripMenuItem";
-            this.newToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.newToolStripMenuItem.Size = new System.Drawing.Size(101, 22);
             this.newToolStripMenuItem.Text = "New";
             this.newToolStripMenuItem.Click += new System.EventHandler(this.newToolStripMenuItem_Click);
             // 
             // clearToolStripMenuItem
             // 
             this.clearToolStripMenuItem.Name = "clearToolStripMenuItem";
-            this.clearToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.clearToolStripMenuItem.Size = new System.Drawing.Size(101, 22);
             this.clearToolStripMenuItem.Text = "Clear";
             this.clearToolStripMenuItem.Click += new System.EventHandler(this.clearToolStripMenuItem_Click);
             // 
             // loadToolStripMenuItem
             // 
             this.loadToolStripMenuItem.Name = "loadToolStripMenuItem";
-            this.loadToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.loadToolStripMenuItem.Size = new System.Drawing.Size(101, 22);
             this.loadToolStripMenuItem.Text = "Load";
             this.loadToolStripMenuItem.Click += new System.EventHandler(this.loadToolStripMenuItem_Click);
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.errorLabel);
+            this.panel1.Controls.Add(this.drillHeightLabel);
+            this.panel1.Controls.Add(this.drillHeightTextBox);
+            this.panel1.Controls.Add(this.simulationTickLabel);
+            this.panel1.Controls.Add(this.simulationTickTrackBar);
             this.panel1.Controls.Add(this.drillButton);
             this.panel1.Controls.Add(this.radiousLabel);
             this.panel1.Controls.Add(this.radiousTextBox);
@@ -156,9 +167,45 @@ namespace Geometric2
             this.panel1.Size = new System.Drawing.Size(245, 869);
             this.panel1.TabIndex = 3;
             // 
+            // drillHeightLabel
+            // 
+            this.drillHeightLabel.AutoSize = true;
+            this.drillHeightLabel.Location = new System.Drawing.Point(19, 539);
+            this.drillHeightLabel.Name = "drillHeightLabel";
+            this.drillHeightLabel.Size = new System.Drawing.Size(86, 13);
+            this.drillHeightLabel.TabIndex = 11;
+            this.drillHeightLabel.Text = "Drill Height (mm):";
+            // 
+            // drillHeightTextBox
+            // 
+            this.drillHeightTextBox.Location = new System.Drawing.Point(108, 536);
+            this.drillHeightTextBox.Name = "drillHeightTextBox";
+            this.drillHeightTextBox.Size = new System.Drawing.Size(114, 20);
+            this.drillHeightTextBox.TabIndex = 10;
+            this.drillHeightTextBox.TextChanged += new System.EventHandler(this.drillHeightTextBox_TextChanged);
+            // 
+            // simulationTickLabel
+            // 
+            this.simulationTickLabel.AutoSize = true;
+            this.simulationTickLabel.Location = new System.Drawing.Point(9, 579);
+            this.simulationTickLabel.Name = "simulationTickLabel";
+            this.simulationTickLabel.Size = new System.Drawing.Size(82, 13);
+            this.simulationTickLabel.TabIndex = 9;
+            this.simulationTickLabel.Text = "Simulation Tick:";
+            // 
+            // simulationTickTrackBar
+            // 
+            this.simulationTickTrackBar.Location = new System.Drawing.Point(12, 605);
+            this.simulationTickTrackBar.Maximum = 1000;
+            this.simulationTickTrackBar.Name = "simulationTickTrackBar";
+            this.simulationTickTrackBar.Size = new System.Drawing.Size(226, 45);
+            this.simulationTickTrackBar.TabIndex = 8;
+            this.simulationTickTrackBar.Value = 10;
+            this.simulationTickTrackBar.Scroll += new System.EventHandler(this.simulationTickTrackBar_Scroll);
+            // 
             // drillButton
             // 
-            this.drillButton.Location = new System.Drawing.Point(36, 526);
+            this.drillButton.Location = new System.Drawing.Point(36, 667);
             this.drillButton.Name = "drillButton";
             this.drillButton.Size = new System.Drawing.Size(172, 32);
             this.drillButton.TabIndex = 7;
@@ -402,10 +449,11 @@ namespace Geometric2
             // 
             // progressBar
             // 
-            this.progressBar.Location = new System.Drawing.Point(12, 573);
+            this.progressBar.Location = new System.Drawing.Point(12, 714);
             this.progressBar.Name = "progressBar";
             this.progressBar.Size = new System.Drawing.Size(226, 23);
             this.progressBar.TabIndex = 1;
+            this.progressBar.Click += new System.EventHandler(this.progressBar_Click);
             // 
             // drillingLineCheckBox
             // 
@@ -417,6 +465,14 @@ namespace Geometric2
             this.drillingLineCheckBox.Text = "Drilling Lines";
             this.drillingLineCheckBox.UseVisualStyleBackColor = true;
             this.drillingLineCheckBox.CheckedChanged += new System.EventHandler(this.drillingLineCheckBox_CheckedChanged);
+            // 
+            // errorLabel
+            // 
+            this.errorLabel.AutoSize = true;
+            this.errorLabel.Location = new System.Drawing.Point(19, 751);
+            this.errorLabel.Name = "errorLabel";
+            this.errorLabel.Size = new System.Drawing.Size(0, 13);
+            this.errorLabel.TabIndex = 12;
             // 
             // Form1
             // 
@@ -433,6 +489,7 @@ namespace Geometric2
             this.menuStrip2.PerformLayout();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.simulationTickTrackBar)).EndInit();
             this.panel4.ResumeLayout(false);
             this.panel4.PerformLayout();
             this.panel3.ResumeLayout(false);
@@ -481,6 +538,11 @@ namespace Geometric2
         private System.Windows.Forms.TextBox radiousTextBox;
         private System.Windows.Forms.Button drillButton;
         private System.Windows.Forms.ToolStripMenuItem clearToolStripMenuItem;
+        private System.Windows.Forms.Label simulationTickLabel;
+        private System.Windows.Forms.TrackBar simulationTickTrackBar;
+        private System.Windows.Forms.Label drillHeightLabel;
+        private System.Windows.Forms.TextBox drillHeightTextBox;
+        private System.Windows.Forms.Label errorLabel;
     }
 }
 

@@ -31,7 +31,9 @@ namespace Geometric2.ModelGeneration
         private float[] RoundLayerPoints;
         uint[] RoundLayerIndices;
 
-        public int simulationTick = 10;
+        public int[] simulationTick = new int[] { 10 };
+        public int[] percentCompleted = new int[] { 0 };
+        public int[] nonCuttingPart = new int[] { 0 };
 
         Texture texture;
         Texture specular;
@@ -39,9 +41,13 @@ namespace Geometric2.ModelGeneration
         Texture heightmap;
         int width, height;
         float altitude;
+        Thread thread = null;
 
-        public MillModel(int width, int height, float altitude, int TopLayerX, int TopLayerY)
+        public MillModel(int width, int height, float altitude, int TopLayerX, int TopLayerY, int[] simulationTick, int[] percentCompleted, int[] nonCuttingPart)
         {
+            this.simulationTick = simulationTick;
+            this.percentCompleted = percentCompleted;
+            this.nonCuttingPart = nonCuttingPart;
             topLayer = new float[width, height];
             CenterPosition = new Vector3(0, 0, 0);
             this.width = width;
@@ -172,9 +178,14 @@ namespace Geometric2.ModelGeneration
             heightmap = new Texture(width, height, layer);
         }
 
-        public void DrillAll(List<Vector3> loadedPositions, CutterType cutterType, DrillType drillType, int radius)
+        public void DrillAll(List<Vector3> loadedPositions, CutterType cutterType, DrillType drillType, int radius, int drillHeight)
         {
-            Thread thread = new Thread(() =>
+            if(thread != null)
+            {
+                thread.Abort();
+            }
+
+            thread = new Thread(() =>
             {
                 List<Vector3> processedPoints = new List<Vector3>();
                 foreach (var p in loadedPositions)
@@ -185,27 +196,31 @@ namespace Geometric2.ModelGeneration
 
                 if (drillType == DrillType.Parallel)
                 {
+                    percentCompleted[0] = 50;
                     Parallel.For(1, processedPoints.Count, i =>
                     {
                         Vector3 prev = processedPoints[i - 1];
                         Vector3 current = processedPoints[i];
-                        Brezenham((int)prev.X, (int)prev.Z, (int)current.X, (int)current.Z, current.Y, prev.Y, current.Y, cutterType, drillType, radius);
+                        Brezenham((int)prev.X, (int)prev.Z, (int)current.X, (int)current.Z, current.Y, prev.Y, current.Y, cutterType, drillType, radius, drillHeight);
                     });
                 }
                 else
                 {
                     for (int i = 1; i < processedPoints.Count; i++)
                     {
+                        percentCompleted[0] = (int)(i * 100 / processedPoints.Count);
                         Vector3 prev = processedPoints[i - 1];
                         Vector3 current = processedPoints[i];
-                        Brezenham((int)prev.X, (int)prev.Z, (int)current.X, (int)current.Z, current.Y, prev.Y, current.Y, cutterType, drillType, radius);
+                        Brezenham((int)prev.X, (int)prev.Z, (int)current.X, (int)current.Z, current.Y, prev.Y, current.Y, cutterType, drillType, radius, drillHeight);
                     }
                 }
+
+                percentCompleted[0] = 100;
             });
             thread.Start();
         }
 
-        public void Brezenham(int x, int y, int x2, int y2, float height, float z_From, float z_To, CutterType cutterType, DrillType drillType, int radius)
+        public void Brezenham(int x, int y, int x2, int y2, float height, float z_From, float z_To, CutterType cutterType, DrillType drillType, int radius, int drillHeight)
         {
             if (x != x2 || y != y2)
             {
@@ -229,10 +244,10 @@ namespace Geometric2.ModelGeneration
                 float z_DiffPart = z_Diff / longest;
                 for (int i = 0; i <= longest; i++)
                 {
-                    DrillHole(new Vector3(x, z_From + i * z_DiffPart, y), radius, cutterType);
+                    DrillHole(new Vector3(x, z_From + i * z_DiffPart, y), radius, cutterType, drillHeight, drillType);
                     if (drillType == DrillType.Normal)
                     {
-                        Thread.Sleep(simulationTick);
+                        Thread.Sleep(simulationTick[0]);
                     }
 
                     numerator += shortest;
@@ -257,27 +272,27 @@ namespace Geometric2.ModelGeneration
                     {
                         for (float i = z_From; i < z_To; i += 0.01f)
                         {
-                            DrillHole(new Vector3(x, i, y), radius, cutterType);
+                            DrillHole(new Vector3(x, i, y), radius, cutterType, drillHeight, drillType);
                         }
                     }
                     else
                     {
                         for (float i = z_From; i >= z_To; i -= 0.01f)
                         {
-                            DrillHole(new Vector3(x, i, y), radius, cutterType);
+                            DrillHole(new Vector3(x, i, y), radius, cutterType, drillHeight, drillType);
                         }
                     }
 
-                    Thread.Sleep(simulationTick);
+                    Thread.Sleep(simulationTick[0]);
                 }
                 else
                 {
-                    DrillHole(new Vector3(x, height, y), radius, cutterType);
+                    DrillHole(new Vector3(x, height, y), radius, cutterType, drillHeight, drillType);
                 }
             }
         }
 
-        public void DrillHole(Vector3 point, int radius, CutterType cutterType)
+        public void DrillHole(Vector3 point, int radius, CutterType cutterType, int drillHeight, DrillType drillType)
         {
             int x = (int)point.X;
             float y = point.Y;
@@ -305,6 +320,12 @@ namespace Geometric2.ModelGeneration
                                 int val = radius_2 * radius_2 - (xb - xa) * (xb - xa) - (zb - za) * (zb - za);
                                 yb = -(float)Math.Sqrt(val) + ya;
                                 yb /= 100;
+                            }
+
+                            if(drillType != DrillType.Parallel && topLayer[x + _x, z + _y] > y + drillHeight/100.0f)
+                            {
+                                nonCuttingPart[0] = 1;
+                                thread.Abort();
                             }
 
                             if (topLayer[x + _x, z + _y] > yb)

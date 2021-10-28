@@ -40,7 +40,7 @@ namespace Geometric2
 
             thread.Start();
             coursor = new Coursor();
-            millModel = new MillModel(dataModel.Width, dataModel.Height, dataModel.Altitude, dataModel.Divisions_X, dataModel.Divisions_Y);
+            millModel = new MillModel(dataModel.Width, dataModel.Height, dataModel.Altitude, dataModel.Divisions_X, dataModel.Divisions_Y, simulationTick, percentCompleted, nonCuttingPart);
             coursor.CoursorMode = CoursorMode.Auto;
             transformCenterLines.selectedElements = SelectedElements;
             this.glControl1.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.glControl1_MouseWheel);
@@ -48,8 +48,31 @@ namespace Geometric2
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            Thread thread = new Thread(() =>
+            {
+                while (true)
+                {
+                    this.Invoke((MethodInvoker)delegate { 
+                        progressBar.Value = percentCompleted[0];
+                        if (nonCuttingPart[0] != 0)
+                        {
+                            errorLabel.Text = "ERROR: MILLING WITH A NON-CUTTING PART";
+                            nonCuttingPart[0] = 0;
+                        }
+                    });
+                    if (percentCompleted[0] == 100)
+                    {
+                        percentCompleted[0] = 0;
+                    }
+
+                    Thread.Sleep(50);
+                }
+            });
+            thread.Start();
+
             cameraLightCheckBox.Checked = true;
             radiousTextBox.Text = "5.0";
+            drillHeightTextBox.Text = "5.0";
             normalRadioButton.Checked = true;
             drillButton.Enabled = false;
         }
@@ -65,6 +88,10 @@ namespace Geometric2
         DrillType drillType = DrillType.Normal;
         CutterType cutterType = CutterType.Spherical;
         int radious = 50;
+        int drillHeight = 50;
+        int[] simulationTick = new int[] { 0 };
+        int[] percentCompleted = new int[] { 0 };
+        int[] nonCuttingPart = new int[] { 0 };
 
 
         private XyzLines xyzLines = new XyzLines();
@@ -107,6 +134,10 @@ namespace Geometric2
                     if (float.TryParse(X, out _x) && float.TryParse(Y, out _y) && float.TryParse(Z, out _z))
                     {
                         drillPositions.Add(new Vector3(_x, _z, -_y));
+                        if(_z < 0)
+                        {
+                            MessageBox.Show("GIONG TO DRILL UNDER SURFACE");
+                        }
                     }
                 }
 
@@ -210,7 +241,7 @@ namespace Geometric2
 
         private void drillButton_Click(object sender, EventArgs e)
         {
-            millModel.DrillAll(drillingLines.drillPoints, cutterType, drillType, radious);
+            millModel.DrillAll(drillingLines.drillPoints, cutterType, drillType, radious, drillHeight);
         }
 
         private void normalRadioButton_CheckedChanged(object sender, EventArgs e)
@@ -249,6 +280,32 @@ namespace Geometric2
                         millModel.topLayer[i, j] = dataModel.Altitude;
                     }
                 }
+            }
+        }
+
+        private void progressBar_Click(object sender, EventArgs e)
+        {
+        }
+
+        private void simulationTickTrackBar_Scroll(object sender, EventArgs e)
+        {
+            simulationTick[0] = simulationTickTrackBar.Value;
+        }
+
+        private void drillHeightTextBox_TextChanged(object sender, EventArgs e)
+        {
+            float drillH;
+            if (float.TryParse(drillHeightTextBox.Text, out drillH))
+            {
+                drillHeight = (int)(drillH * 10);
+                if (drillHeightTextBox.Text.Contains(".") && drillHeightTextBox.Text.Split('.').LastOrDefault().Length > 1 || drillHeightTextBox.Text.Split('.').Length > 2)
+                {
+                    drillHeightTextBox.Text = (drillHeight / 10.0f).ToString();
+                }
+            }
+            else
+            {
+                drillHeightTextBox.Text = (drillHeight / 10.0f).ToString();
             }
         }
 
