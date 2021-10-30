@@ -35,6 +35,8 @@ namespace Geometric2.ModelGeneration
         public int[] percentCompleted = new int[] { 0 };
         public int[] nonCuttingPart = new int[] { 0 };
 
+        float _xStep, _yStep;
+
         Texture texture;
         Texture specular;
         float divider = 100.0f;
@@ -48,7 +50,7 @@ namespace Geometric2.ModelGeneration
             this.simulationTick = simulationTick;
             this.percentCompleted = percentCompleted;
             this.nonCuttingPart = nonCuttingPart;
-            topLayer = new float[width, height];
+            topLayer = new float[TopLayerX, TopLayerY];
             CenterPosition = new Vector3(0, 0, 0);
             this.width = width;
             this.height = height;
@@ -131,7 +133,7 @@ namespace Geometric2.ModelGeneration
         {
             _shader.Use();
             RegenerateTexture();
-            Translation = new Vector3(-width / (2 * 100.0f), 0, -height / (2 * 100.0f)); ;
+            Translation = new Vector3(-width / (2 * 100.0f), 0, -height / (2 * 100.0f));
             Matrix4 model = ModelMatrix.CreateModelMatrix(new Vector3(width / (float)TopLayerX, 1, height / (float)TopLayerY), RotationQuaternion, CenterPosition + Translation + TemporaryTranslation, rotationCentre, TempRotationQuaternion);
             _shader.SetMatrix4("model", model);
             GL.BindVertexArray(MillModelTopLayerVAO);
@@ -305,7 +307,7 @@ namespace Geometric2.ModelGeneration
                 {
                     if (_x * _x + _y * _y <= radius_2 * radius_2)
                     {
-                        if (x + _x >= 0 && z + _y >= 0 && x + _x < width && z + _y < height)
+                        if (x + _x >= 0 && z + _y >= 0 && x + _x < TopLayerX && z + _y < TopLayerY)
                         {
                             float yb = y;
                             if (cutterType == CutterType.Spherical)
