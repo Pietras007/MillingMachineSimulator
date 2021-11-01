@@ -324,12 +324,10 @@ namespace Geometric2.ModelGeneration
             float x = point.X;
             float y = point.Y;
             float z = point.Z;
-            //int radius = (int)(r / 2);
             float f_radous = r / 2;
 
             float rX = f_radous / (width / (float)TopLayerX);
             float rY = f_radous / (height / (float)TopLayerY);
-
 
             float NPX = (point.X - TopLayerX / 2.0f) * (width / (float)TopLayerX);
             float NPY = (point.Z - TopLayerY / 2.0f) * (height / (float)TopLayerY);
