@@ -30,6 +30,9 @@ namespace Geometric2.ModelGeneration
         public int MillModelRoundLayerVBO, MillModelRoundLayerVAO, MillModelRoundLayerEBO;
         private float[] RoundLayerPoints;
         uint[] RoundLayerIndices;
+        float[] layer;
+        bool working = false;
+        bool drilling = true;
 
         public int[] simulationTick = new int[] { 10 };
         public int[] percentCompleted = new int[] { 0 };
@@ -51,6 +54,7 @@ namespace Geometric2.ModelGeneration
             this.percentCompleted = percentCompleted;
             this.nonCuttingPart = nonCuttingPart;
             topLayer = new float[TopLayerX, TopLayerY];
+            layer = new float[topLayer.Length];
             CenterPosition = new Vector3(0, 0, 0);
             this.width = width;
             this.height = height;
@@ -160,39 +164,47 @@ namespace Geometric2.ModelGeneration
             RenderCenterOfElement(_shader);
         }
 
-        private void RegenerateTexture()
+        private async void RegenerateTexture()
         {
-            if (heightmap != null)
+            if (!working && drilling)
             {
-                heightmap.DeleteTexture();
-            }
-
-            float[] layer = new float[topLayer.Length];
-            for (int i = 0; i < width; i++)
-            {
-                for (int j = 0; j < height; j++)
+                working = true;
+                await new TaskFactory().StartNew(() =>
                 {
-                    var x = topLayer[i, j];
-                    layer[j * width + i] = x;
+                    Parallel.For(0, TopLayerX, i =>
+                    {
+                        for (int j = 0; j < TopLayerY; j++)
+                        {
+                            var x = topLayer[i, j];
+                            layer[j * TopLayerX + i] = x;
+                        }
+                    });
+                });
+                if (heightmap != null)
+                {
+                    heightmap.DeleteTexture();
                 }
+                heightmap = new Texture(TopLayerX, TopLayerY, layer);
+                working = false;
             }
-
-            heightmap = new Texture(width, height, layer);
         }
 
-        public void DrillAll(List<Vector3> loadedPositions, CutterType cutterType, DrillType drillType, int radius, int drillHeight)
+        public void DrillAll(List<Vector3> loadedPositions, CutterType cutterType, DrillType drillType, float radius, int drillHeight)
         {
-            if(thread != null)
+            nonCuttingPart[0] = -1;
+
+            if (thread != null)
             {
                 thread.Abort();
             }
 
             thread = new Thread(() =>
             {
+                drilling = true;
                 List<Vector3> processedPoints = new List<Vector3>();
                 foreach (var p in loadedPositions)
                 {
-                    Vector3 point = new Vector3(p.X * 100 + width / 2.0f, p.Y, p.Z * 100 + height / 2.0f);
+                    Vector3 point = new Vector3(p.X * 100 / (width / (float)TopLayerX) + TopLayerX / 2.0f, p.Y, p.Z * 100 / (height / (float)TopLayerY) + TopLayerY / 2.0f);
                     processedPoints.Add(point);
                 }
 
@@ -218,11 +230,12 @@ namespace Geometric2.ModelGeneration
                 }
 
                 percentCompleted[0] = 100;
+                drilling = false;
             });
             thread.Start();
         }
 
-        public void Brezenham(int x, int y, int x2, int y2, float height, float z_From, float z_To, CutterType cutterType, DrillType drillType, int radius, int drillHeight)
+        public void Brezenham(int x, int y, int x2, int y2, float height, float z_From, float z_To, CutterType cutterType, DrillType drillType, float radius, int drillHeight)
         {
             if (x != x2 || y != y2)
             {
@@ -246,7 +259,7 @@ namespace Geometric2.ModelGeneration
                 float z_DiffPart = z_Diff / longest;
                 for (int i = 0; i <= longest; i++)
                 {
-                    DrillHole(new Vector3(x, z_From + i * z_DiffPart, y), radius, cutterType, drillHeight, drillType);
+                    DrillHole(new Vector3(x, z_From + i * z_DiffPart, y), radius, cutterType, drillHeight, drillType, false);
                     if (drillType == DrillType.Normal)
                     {
                         Thread.Sleep(simulationTick[0]);
@@ -274,14 +287,14 @@ namespace Geometric2.ModelGeneration
                     {
                         for (float i = z_From; i < z_To; i += 0.01f)
                         {
-                            DrillHole(new Vector3(x, i, y), radius, cutterType, drillHeight, drillType);
+                            DrillHole(new Vector3(x, i, y), radius, cutterType, drillHeight, drillType, true);
                         }
                     }
                     else
                     {
                         for (float i = z_From; i >= z_To; i -= 0.01f)
                         {
-                            DrillHole(new Vector3(x, i, y), radius, cutterType, drillHeight, drillType);
+                            DrillHole(new Vector3(x, i, y), radius, cutterType, drillHeight, drillType, true);
                         }
                     }
 
@@ -289,50 +302,104 @@ namespace Geometric2.ModelGeneration
                 }
                 else
                 {
-                    DrillHole(new Vector3(x, height, y), radius, cutterType, drillHeight, drillType);
+                    DrillHole(new Vector3(x, height, y), radius, cutterType, drillHeight, drillType, true);
                 }
             }
         }
 
-        public void DrillHole(Vector3 point, int radius, CutterType cutterType, int drillHeight, DrillType drillType)
+        public void DrillHole(Vector3 point, float r, CutterType cutterType, int drillHeight, DrillType drillType, bool goingDown)
         {
             int x = (int)point.X;
             float y = point.Y;
             int z = (int)point.Z;
-            int radius_2 = radius / 2;
+            int radius = (int)(r / 2);
+            float f_radous = r / 2;
 
-            for (int _y = -radius_2; _y <= radius_2; _y++)
+            float rX = f_radous / (width / (float)TopLayerX);
+            float rY = f_radous / (height / (float)TopLayerY);
+
+            //for (int _x = -(int)rX; _x <= (int)rX; _x++)
+            //{
+            //    for (int _y = -(int)rY; _y <= (int)rY; _y++)
+            //    {
+            //        if (_x + x >= 0 && _y + z >= 0 && _x + x < TopLayerX && _y + z < TopLayerY)
+            //        {
+            //            int OldX = (int)(_x * (f_radous / rX));
+            //            int OldY = (int)(_y * (f_radous / rY));
+
+            //            if (OldX * OldX + OldY * OldY <= f_radous * f_radous)
+            //            {
+            //                float yb = y;
+            //                if (cutterType == CutterType.Spherical)
+            //                {
+            //                    int xa = x;
+            //                    float ya = y * 100 + f_radous;
+            //                    int za = z;
+
+            //                    int xb = x + OldX;
+            //                    int zb = z + OldY;
+
+            //                    int val = radius * radius - (xb - xa) * (xb - xa) - (zb - za) * (zb - za);
+            //                    yb = -(float)Math.Sqrt(val) + ya;
+            //                    yb /= 100;
+            //                }
+
+            //                if (drillType != DrillType.Parallel && topLayer[_x + x, _y + z] > y + drillHeight / 100.0f)
+            //                {
+            //                    nonCuttingPart[0] = 1;
+            //                    thread.Abort();
+            //                }
+
+            //                if (topLayer[_x + x, _y + z] > yb)
+            //                {
+            //                    topLayer[_x + x, _y + z] = yb;
+            //                }
+            //            }
+            //        }
+            //    }
+            //}
+
+            for (float _x = -rX; _x <= rX; _x+= 1)
             {
-                for (int _x = -radius_2; _x <= radius_2; _x++)
+                for (float _y = -rY; _y <= rY; _y+= 1)
                 {
-                    if (_x * _x + _y * _y <= radius_2 * radius_2)
+                    if (_x + x >= 0 && _y + z >= 0 && _x + x < TopLayerX && _y + z < TopLayerY)
                     {
-                        if (x + _x >= 0 && z + _y >= 0 && x + _x < TopLayerX && z + _y < TopLayerY)
+                        float OldX = (_x * (f_radous / rX));
+                        float OldY = (_y * (f_radous / rY));
+
+                        if (OldX * OldX + OldY * OldY <= f_radous * f_radous)
                         {
                             float yb = y;
                             if (cutterType == CutterType.Spherical)
                             {
-                                int xa = x;
-                                float ya = y*100 + radius_2;
-                                int za = z;
+                                float xa = x;
+                                float ya = y * 100 + f_radous;
+                                float za = z;
 
-                                int xb = x + _x;
-                                int zb = z + _y;
+                                float xb = x + OldX;
+                                float zb = z + OldY;
 
-                                int val = radius_2 * radius_2 - (xb - xa) * (xb - xa) - (zb - za) * (zb - za);
+                                float val = radius * radius - (xb - xa) * (xb - xa) - (zb - za) * (zb - za);
                                 yb = -(float)Math.Sqrt(val) + ya;
                                 yb /= 100;
                             }
 
-                            if(drillType != DrillType.Parallel && topLayer[x + _x, z + _y] > y + drillHeight/100.0f)
+                            if (drillType != DrillType.Parallel && topLayer[(int)(_x + x), (int)(_y + z)] > y + drillHeight / 100.0f)
                             {
                                 nonCuttingPart[0] = 1;
                                 thread.Abort();
                             }
 
-                            if (topLayer[x + _x, z + _y] > yb)
+                            if(drillType != DrillType.Parallel && goingDown && cutterType == CutterType.Flat && topLayer[(int)(_x + x), (int)(_y + z)] > yb)
                             {
-                                topLayer[x + _x, z + _y] = yb;
+                                nonCuttingPart[0] = 2;
+                                thread.Abort();
+                            }
+
+                            if (topLayer[(int)(_x + x), (int)(_y + z)] > yb)
+                            {
+                                topLayer[(int)(_x + x), (int)(_y + z)] = yb;
                             }
                         }
                     }
@@ -348,9 +415,9 @@ namespace Geometric2.ModelGeneration
             int idx = 0;
             int indiceidx = 0;
 
-            for (int i = 0; i < width; i++)
+            for (int i = 0; i < TopLayerX; i++)
             {
-                for (int j = 0; j < height; j++)
+                for (int j = 0; j < TopLayerY; j++)
                 {
                     topLayer[i, j] = altitude;
                 }

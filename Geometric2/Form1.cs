@@ -54,9 +54,21 @@ namespace Geometric2
                 {
                     this.Invoke((MethodInvoker)delegate { 
                         progressBar.Value = percentCompleted[0];
-                        if (nonCuttingPart[0] != 0)
+                        if (nonCuttingPart[0] == -1)
+                        {
+                            errorLabel.Text = "NO ERROR";
+                            nonCuttingPart[0] = 0;
+                        }
+
+                        if (nonCuttingPart[0] == 1)
                         {
                             errorLabel.Text = "ERROR: MILLING WITH A NON-CUTTING PART";
+                            nonCuttingPart[0] = 0;
+                        }
+
+                        if (nonCuttingPart[0] == 2)
+                        {
+                            errorLabel.Text = "ERROR: FLAT IS GOING DOWN";
                             nonCuttingPart[0] = 0;
                         }
                     });
@@ -87,7 +99,7 @@ namespace Geometric2
         private bool cameraLight = true;
         DrillType drillType = DrillType.Normal;
         CutterType cutterType = CutterType.Spherical;
-        int radious = 50;
+        float radious = 50;
         int drillHeight = 50;
         int[] simulationTick = new int[] { 0 };
         int[] percentCompleted = new int[] { 0 };
@@ -227,7 +239,7 @@ namespace Geometric2
             float r;
             if (float.TryParse(radiousTextBox.Text, out r))
             {
-                radious = (int)(r * 10);
+                radious = r * 10;
                 if (radiousTextBox.Text.Contains(".") && radiousTextBox.Text.Split('.').LastOrDefault().Length > 1 || radiousTextBox.Text.Split('.').Length > 2)
                 {
                     radiousTextBox.Text = (radious / 10.0f).ToString();
