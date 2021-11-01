@@ -37,7 +37,7 @@ namespace Geometric2.ModelGeneration
         {
         }
 
-        public override void CreateGlElement(Shader _shader)
+        public override void CreateGlElement(Shader _shader, Shader _millshader)
         {
             _shader.Use();
             var a_Position_Location = _shader.GetAttribLocation("a_Position");
@@ -53,7 +53,7 @@ namespace Geometric2.ModelGeneration
             GL.EnableVertexAttribArray(a_Position_Location);
         }
 
-        public override void RenderGlElement(Shader _shader, Vector3 rotationCentre)
+        public override void RenderGlElement(Shader _shader, Shader _millshader, Vector3 rotationCentre)
         {
             _shader.Use();
             if (selectedElements != null && selectedElements.Count > 1)

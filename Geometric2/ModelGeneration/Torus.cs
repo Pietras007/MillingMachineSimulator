@@ -14,8 +14,8 @@ namespace Geometric2.ModelGeneration
         private float[] torusPoints;
         uint[] indices;
 
-        public float torus_R = 2.2f;
-        public float torus_r = 1.4f;
+        public float torus_R = 0.1f;
+        public float torus_r = 0.1f;
         public int torusMajorDividions = 6;
         public int torusMinorDividions = 6;
         public int torusNumber;
@@ -44,7 +44,7 @@ namespace Geometric2.ModelGeneration
             return FullName + " " + ElementName;
         }
 
-        public override void CreateGlElement(Shader _shader)
+        public override void CreateGlElement(Shader _shader, Shader _millshader)
         {
             _shader.Use();
             FillTorusGeometry();
@@ -63,27 +63,19 @@ namespace Geometric2.ModelGeneration
             CreateCenterOfElement(_shader);
         }
 
-        public override void RenderGlElement(Shader _shader, Vector3 rotationCentre)
+        public override void RenderGlElement(Shader _shader, Shader _millshader, Vector3 rotationCentre)
         {
-            _shader.Use();
-            //Matrix4 model = ModelMatrix.CreateModelMatrix(ElementScale * TempElementScale, (float)(2 * Math.PI * ElementRotationX / 360), (float)(2 * Math.PI * ElementRotationY / 360), (float)(2 * Math.PI * ElementRotationZ / 360), CenterPosition + Translation + TemporaryTranslation);
-            TempRotationQuaternion = Quaternion.FromEulerAngles((float)(2 * Math.PI * ElementRotationX / 360), (float)(2 * Math.PI * ElementRotationY / 360), (float)(2 * Math.PI * ElementRotationZ / 360));
-            Matrix4 model = ModelMatrix.CreateModelMatrix(ElementScale * TempElementScale, RotationQuaternion, CenterPosition + Translation + TemporaryTranslation, rotationCentre, TempRotationQuaternion);
-            _shader.SetMatrix4("model", model);
-            GL.BindVertexArray(torusVAO);
             if (IsSelected)
             {
-                _shader.SetVector3("fragmentColor", ColorHelper.ColorToVector(Color.Orange));
+                _shader.Use();
+                TempRotationQuaternion = Quaternion.FromEulerAngles((float)(2 * Math.PI * ElementRotationX / 360), (float)(2 * Math.PI * ElementRotationY / 360), (float)(2 * Math.PI * ElementRotationZ / 360));
+                Matrix4 model = ModelMatrix.CreateModelMatrix(ElementScale * TempElementScale, RotationQuaternion, CenterPosition + Translation + TemporaryTranslation, rotationCentre, TempRotationQuaternion);
+                _shader.SetMatrix4("model", model);
+                GL.BindVertexArray(torusVAO);
+                _shader.SetVector3("fragmentColor", ColorHelper.ColorToVector(Color.Blue));
+                GL.DrawElements(PrimitiveType.Lines, 2 * torusPoints.Length, DrawElementsType.UnsignedInt, 0);
+                GL.BindVertexArray(0);
             }
-            else
-            {
-                _shader.SetVector3("fragmentColor", ColorHelper.ColorToVector(Color.Black));
-            }
-
-            GL.DrawElements(PrimitiveType.Lines, 2 * torusPoints.Length, DrawElementsType.UnsignedInt, 0);
-            GL.BindVertexArray(0);
-
-            RenderCenterOfElement(_shader);
         }
 
         public void RegenerateTorusVertices()

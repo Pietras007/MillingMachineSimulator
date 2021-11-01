@@ -45,12 +45,12 @@ namespace Geometric2.ModelGeneration
 
         int centerLinesVBO, centerLinesVAO, centerLinesEBO;
 
-        public virtual void CreateGlElement(Shader _shader)
+        public virtual void CreateGlElement(Shader _shader, Shader _millshader)
         {
 
         }
 
-        public virtual void RenderGlElement(Shader _shader, Vector3 rotationCentre)
+        public virtual void RenderGlElement(Shader _shader, Shader _millshader, Vector3 rotationCentre)
         {
 
         }

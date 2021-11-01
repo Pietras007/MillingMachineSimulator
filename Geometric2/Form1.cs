@@ -212,7 +212,7 @@ namespace Geometric2
                 drillButton.Enabled = true;
 
                 Elements.Add(drillingLines);
-                drillingLines.CreateGlElement(_shader);
+                drillingLines.CreateGlElement(_shader, _millshader);
             }
         }
 
@@ -285,9 +285,9 @@ namespace Geometric2
         {
             if(millModel != null && millModel.topLayer != null)
             {
-                for(int i=0;i<dataModel.Width;i++)
+                for(int i=0;i<dataModel.Divisions_X;i++)
                 {
-                    for(int j=0;j<dataModel.Height;j++)
+                    for(int j=0;j<dataModel.Divisions_Y;j++)
                     {
                         millModel.topLayer[i, j] = dataModel.Altitude;
                     }
@@ -318,6 +318,18 @@ namespace Geometric2
             else
             {
                 drillHeightTextBox.Text = (drillHeight / 10.0f).ToString();
+            }
+        }
+
+        private void showDrillerCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (showDrillerCheckBox.Checked)
+            {
+                millModel.showDriller[0] = 1;
+            }
+            else
+            {
+                millModel.showDriller[0] = 0;
             }
         }
 

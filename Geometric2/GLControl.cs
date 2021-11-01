@@ -30,10 +30,10 @@ namespace Geometric2
             _millshader = new Shader("./../../../Shaders/VertexShaderMillTop.vert", "./../../../Shaders/FragmentShaderMillTop.frag");
 
             coursor.CreateCoursor(_shader);
-            millModel.CreateGlElement(_millshader);
+            millModel.CreateGlElement(_shader, _millshader);
             foreach (var el in Elements)
             {
-                el.CreateGlElement(_shader);
+                el.CreateGlElement(_shader, _millshader);
             }
 
             _camera = new Camera(new Vector3(0, 5, 15), glControl1.Width / (float)glControl1.Height);
@@ -86,11 +86,11 @@ namespace Geometric2
 
             _millshader.SetFloat("xDiff", 1.0f / (float)(dataModel.Divisions_X - 1));
             _millshader.SetFloat("yDiff", 1.0f / (float)(dataModel.Divisions_Y - 1));
-            millModel.RenderGlElement(_millshader, coursor.CoursorGloalPosition);
+            millModel.RenderGlElement(_shader, _millshader, coursor.CoursorGloalPosition);
             foreach (var el in Elements)
             {
                 _shader.Use();
-                el.RenderGlElement(_shader, coursor.CoursorGloalPosition);
+                el.RenderGlElement(_shader, _millshader, coursor.CoursorGloalPosition);
             }
 
         }
@@ -111,7 +111,7 @@ namespace Geometric2
                     case DrawingStatus.Torus:
                         Torus torus = new Torus(coursor.CoursorGloalPosition, torusNumber);
                         torusNumber++;
-                        torus.CreateGlElement(_shader);
+                        torus.CreateGlElement(_shader, _millshader);
                         Elements.Add(torus);
                         break;
                 }

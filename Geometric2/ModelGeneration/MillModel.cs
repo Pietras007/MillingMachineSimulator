@@ -37,8 +37,7 @@ namespace Geometric2.ModelGeneration
         public int[] simulationTick = new int[] { 10 };
         public int[] percentCompleted = new int[] { 0 };
         public int[] nonCuttingPart = new int[] { 0 };
-
-        float _xStep, _yStep;
+        public int[] showDriller = new int[] { 0 };
 
         Texture texture;
         Texture specular;
@@ -47,9 +46,11 @@ namespace Geometric2.ModelGeneration
         int width, height;
         float altitude;
         Thread thread = null;
+        Torus Torus;
 
         public MillModel(int width, int height, float altitude, int TopLayerX, int TopLayerY, int[] simulationTick, int[] percentCompleted, int[] nonCuttingPart)
         {
+            Torus = new Torus(0, 0, 0);
             this.simulationTick = simulationTick;
             this.percentCompleted = percentCompleted;
             this.nonCuttingPart = nonCuttingPart;
@@ -63,8 +64,9 @@ namespace Geometric2.ModelGeneration
             this.TopLayerY = TopLayerY;
         }
 
-        public override void CreateGlElement(Shader _shader)
+        public override void CreateGlElement(Shader _shader, Shader _millshader)
         {
+            Torus.CreateGlElement(_shader, _millshader);
             texture = new Texture("./../../../Resources/wood.jpg");
             specular = new Texture("./../../../Resources/50specular.png");
             RegenerateTexture();
@@ -80,16 +82,16 @@ namespace Geometric2.ModelGeneration
             GL.BufferData(BufferTarget.ArrayBuffer, TopLayerPoints.Length * sizeof(float), TopLayerPoints, BufferUsageHint.StaticDraw);
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, MillModelTopLayerEBO);
             GL.BufferData(BufferTarget.ElementArrayBuffer, TopLayerIndices.Length * sizeof(uint), TopLayerIndices, BufferUsageHint.StaticDraw);
-            var a_Position_Location = _shader.GetAttribLocation("a_Position");
+            var a_Position_Location = _millshader.GetAttribLocation("a_Position");
             GL.VertexAttribPointer(a_Position_Location, 3, VertexAttribPointerType.Float, true, 8 * sizeof(float), 0);
             GL.EnableVertexAttribArray(a_Position_Location);
-            var aNormal = _shader.GetAttribLocation("aNormal");
+            var aNormal = _millshader.GetAttribLocation("aNormal");
             GL.EnableVertexAttribArray(aNormal);
             GL.VertexAttribPointer(aNormal, 3, VertexAttribPointerType.Float, false, 8 * sizeof(float), 3 * sizeof(float));
-            var aTexCoords = _shader.GetAttribLocation("aTexCoords");
+            var aTexCoords = _millshader.GetAttribLocation("aTexCoords");
             GL.EnableVertexAttribArray(aTexCoords);
             GL.VertexAttribPointer(aTexCoords, 2, VertexAttribPointerType.Float, false, 8 * sizeof(float), 6 * sizeof(float));
-            CreateCenterOfElement(_shader);
+            CreateCenterOfElement(_millshader);
 
 
             MillModelBottomLayerVAO = GL.GenVertexArray();
@@ -101,16 +103,16 @@ namespace Geometric2.ModelGeneration
             GL.BufferData(BufferTarget.ArrayBuffer, BottomLayerPoints.Length * sizeof(float), BottomLayerPoints, BufferUsageHint.StaticDraw);
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, MillModelBottomLayerEBO);
             GL.BufferData(BufferTarget.ElementArrayBuffer, BottomLayerIndices.Length * sizeof(uint), BottomLayerIndices, BufferUsageHint.StaticDraw);
-            a_Position_Location = _shader.GetAttribLocation("a_Position");
+            a_Position_Location = _millshader.GetAttribLocation("a_Position");
             GL.VertexAttribPointer(a_Position_Location, 3, VertexAttribPointerType.Float, true, 8 * sizeof(float), 0);
             GL.EnableVertexAttribArray(a_Position_Location);
-            aNormal = _shader.GetAttribLocation("aNormal");
+            aNormal = _millshader.GetAttribLocation("aNormal");
             GL.EnableVertexAttribArray(aNormal);
             GL.VertexAttribPointer(aNormal, 3, VertexAttribPointerType.Float, false, 8 * sizeof(float), 3 * sizeof(float));
-            aTexCoords = _shader.GetAttribLocation("aTexCoords");
+            aTexCoords = _millshader.GetAttribLocation("aTexCoords");
             GL.EnableVertexAttribArray(aTexCoords);
             GL.VertexAttribPointer(aTexCoords, 2, VertexAttribPointerType.Float, false, 8 * sizeof(float), 6 * sizeof(float));
-            CreateCenterOfElement(_shader);
+            CreateCenterOfElement(_millshader);
 
             MillModelRoundLayerVAO = GL.GenVertexArray();
             MillModelRoundLayerVBO = GL.GenBuffer();
@@ -121,25 +123,35 @@ namespace Geometric2.ModelGeneration
             GL.BufferData(BufferTarget.ArrayBuffer, RoundLayerPoints.Length * sizeof(float), RoundLayerPoints, BufferUsageHint.StaticDraw);
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, MillModelRoundLayerEBO);
             GL.BufferData(BufferTarget.ElementArrayBuffer, RoundLayerIndices.Length * sizeof(uint), RoundLayerIndices, BufferUsageHint.StaticDraw);
-            a_Position_Location = _shader.GetAttribLocation("a_Position");
+            a_Position_Location = _millshader.GetAttribLocation("a_Position");
             GL.VertexAttribPointer(a_Position_Location, 3, VertexAttribPointerType.Float, true, 8 * sizeof(float), 0);
             GL.EnableVertexAttribArray(a_Position_Location);
-            aNormal = _shader.GetAttribLocation("aNormal");
+            aNormal = _millshader.GetAttribLocation("aNormal");
             GL.EnableVertexAttribArray(aNormal);
             GL.VertexAttribPointer(aNormal, 3, VertexAttribPointerType.Float, false, 8 * sizeof(float), 3 * sizeof(float));
-            aTexCoords = _shader.GetAttribLocation("aTexCoords");
+            aTexCoords = _millshader.GetAttribLocation("aTexCoords");
             GL.EnableVertexAttribArray(aTexCoords);
             GL.VertexAttribPointer(aTexCoords, 2, VertexAttribPointerType.Float, false, 8 * sizeof(float), 6 * sizeof(float));
-            CreateCenterOfElement(_shader);
+            CreateCenterOfElement(_millshader);
         }
 
-        public override void RenderGlElement(Shader _shader, Vector3 rotationCentre)
+        public override void RenderGlElement(Shader _shader, Shader _millshader, Vector3 rotationCentre)
         {
-            _shader.Use();
+            Torus.RenderGlElement(_shader, _millshader, rotationCentre);
+            if (showDriller[0] == 1)
+            {
+                Torus.IsSelected = true;
+            }
+            else
+            {
+                Torus.IsSelected = false;
+            }
+
+            _millshader.Use();
             RegenerateTexture();
             Translation = new Vector3(-width / (2 * 100.0f), 0, -height / (2 * 100.0f));
             Matrix4 model = ModelMatrix.CreateModelMatrix(new Vector3(width / (float)TopLayerX, 1, height / (float)TopLayerY), RotationQuaternion, CenterPosition + Translation + TemporaryTranslation, rotationCentre, TempRotationQuaternion);
-            _shader.SetMatrix4("model", model);
+            _millshader.SetMatrix4("model", model);
             GL.BindVertexArray(MillModelTopLayerVAO);
             texture.Use();
             specular.Use(TextureUnit.Texture1);
@@ -161,7 +173,7 @@ namespace Geometric2.ModelGeneration
             GL.DrawElements(PrimitiveType.Triangles, 3 * RoundLayerPoints.Length, DrawElementsType.UnsignedInt, 0);
             GL.BindVertexArray(0);
 
-            RenderCenterOfElement(_shader);
+            RenderCenterOfElement(_millshader);
         }
 
         private async void RegenerateTexture()
@@ -309,18 +321,23 @@ namespace Geometric2.ModelGeneration
 
         public void DrillHole(Vector3 point, float r, CutterType cutterType, int drillHeight, DrillType drillType, bool goingDown)
         {
-            int x = (int)point.X;
+            float x = point.X;
             float y = point.Y;
-            int z = (int)point.Z;
-            int radius = (int)(r / 2);
+            float z = point.Z;
+            //int radius = (int)(r / 2);
             float f_radous = r / 2;
 
             float rX = f_radous / (width / (float)TopLayerX);
             float rY = f_radous / (height / (float)TopLayerY);
 
-            for (float _x = -rX; _x <= rX; _x+= 1)
+
+            float NPX = (point.X - TopLayerX / 2.0f) * (width / (float)TopLayerX);
+            float NPY = (point.Z - TopLayerY / 2.0f) * (height / (float)TopLayerY);
+            Torus.CenterPosition = new Vector3(NPX / 100, y, NPY / 100);
+
+            for (float _x = -rX; _x <= rX; _x += 1)
             {
-                for (float _y = -rY; _y <= rY; _y+= 1)
+                for (float _y = -rY; _y <= rY; _y += 1)
                 {
                     if (_x + x >= 0 && _y + z >= 0 && _x + x < TopLayerX && _y + z < TopLayerY)
                     {
@@ -339,7 +356,7 @@ namespace Geometric2.ModelGeneration
                                 float xb = x + OldX;
                                 float zb = z + OldY;
 
-                                float val = radius * radius - (xb - xa) * (xb - xa) - (zb - za) * (zb - za);
+                                float val = f_radous * f_radous - (xb - xa) * (xb - xa) - (zb - za) * (zb - za);
                                 yb = -(float)Math.Sqrt(val) + ya;
                                 yb /= 100;
                             }
@@ -350,7 +367,7 @@ namespace Geometric2.ModelGeneration
                                 thread.Abort();
                             }
 
-                            if(drillType != DrillType.Parallel && goingDown && cutterType == CutterType.Flat && topLayer[(int)(_x + x), (int)(_y + z)] > yb)
+                            if (drillType != DrillType.Parallel && goingDown && cutterType == CutterType.Flat && topLayer[(int)(_x + x), (int)(_y + z)] > yb)
                             {
                                 nonCuttingPart[0] = 2;
                                 thread.Abort();

@@ -30,7 +30,7 @@ namespace Geometric2.ModelGeneration
             }
         }
 
-        public override void CreateGlElement(Shader _shader)
+        public override void CreateGlElement(Shader _shader, Shader _millshader)
         {
             CreateLines();
             drillLinesVAO = GL.GenVertexArray();
@@ -46,7 +46,7 @@ namespace Geometric2.ModelGeneration
             GL.EnableVertexAttribArray(a_Position_Location);
         }
 
-        public override void RenderGlElement(Shader _shader, Vector3 rotationCentre)
+        public override void RenderGlElement(Shader _shader, Shader _millshader, Vector3 rotationCentre)
         {
             //TempRotationQuaternion = Quaternion.FromEulerAngles((float)(2 * Math.PI * ElementRotationX / 360), (float)(2 * Math.PI * ElementRotationY / 360), (float)(2 * Math.PI * ElementRotationZ / 360));
             

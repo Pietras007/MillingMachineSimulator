@@ -38,6 +38,7 @@ namespace Geometric2
             this.clearToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.errorLabel = new System.Windows.Forms.Label();
             this.drillHeightLabel = new System.Windows.Forms.Label();
             this.drillHeightTextBox = new System.Windows.Forms.TextBox();
             this.simulationTickLabel = new System.Windows.Forms.Label();
@@ -68,7 +69,7 @@ namespace Geometric2
             this.cameraLightCheckBox = new System.Windows.Forms.CheckBox();
             this.progressBar = new System.Windows.Forms.ProgressBar();
             this.drillingLineCheckBox = new System.Windows.Forms.CheckBox();
-            this.errorLabel = new System.Windows.Forms.Label();
+            this.showDrillerCheckBox = new System.Windows.Forms.CheckBox();
             this.menuStrip2.SuspendLayout();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.simulationTickTrackBar)).BeginInit();
@@ -148,6 +149,7 @@ namespace Geometric2
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.showDrillerCheckBox);
             this.panel1.Controls.Add(this.errorLabel);
             this.panel1.Controls.Add(this.drillHeightLabel);
             this.panel1.Controls.Add(this.drillHeightTextBox);
@@ -166,6 +168,14 @@ namespace Geometric2
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(245, 869);
             this.panel1.TabIndex = 3;
+            // 
+            // errorLabel
+            // 
+            this.errorLabel.AutoSize = true;
+            this.errorLabel.Location = new System.Drawing.Point(19, 751);
+            this.errorLabel.Name = "errorLabel";
+            this.errorLabel.Size = new System.Drawing.Size(0, 13);
+            this.errorLabel.TabIndex = 12;
             // 
             // drillHeightLabel
             // 
@@ -439,7 +449,7 @@ namespace Geometric2
             // cameraLightCheckBox
             // 
             this.cameraLightCheckBox.AutoSize = true;
-            this.cameraLightCheckBox.Location = new System.Drawing.Point(108, 477);
+            this.cameraLightCheckBox.Location = new System.Drawing.Point(108, 467);
             this.cameraLightCheckBox.Name = "cameraLightCheckBox";
             this.cameraLightCheckBox.Size = new System.Drawing.Size(88, 17);
             this.cameraLightCheckBox.TabIndex = 2;
@@ -466,13 +476,16 @@ namespace Geometric2
             this.drillingLineCheckBox.UseVisualStyleBackColor = true;
             this.drillingLineCheckBox.CheckedChanged += new System.EventHandler(this.drillingLineCheckBox_CheckedChanged);
             // 
-            // errorLabel
+            // showDrillerCheckBox
             // 
-            this.errorLabel.AutoSize = true;
-            this.errorLabel.Location = new System.Drawing.Point(19, 751);
-            this.errorLabel.Name = "errorLabel";
-            this.errorLabel.Size = new System.Drawing.Size(0, 13);
-            this.errorLabel.TabIndex = 12;
+            this.showDrillerCheckBox.AutoSize = true;
+            this.showDrillerCheckBox.Location = new System.Drawing.Point(108, 490);
+            this.showDrillerCheckBox.Name = "showDrillerCheckBox";
+            this.showDrillerCheckBox.Size = new System.Drawing.Size(79, 17);
+            this.showDrillerCheckBox.TabIndex = 13;
+            this.showDrillerCheckBox.Text = "ShowDriller";
+            this.showDrillerCheckBox.UseVisualStyleBackColor = true;
+            this.showDrillerCheckBox.CheckedChanged += new System.EventHandler(this.showDrillerCheckBox_CheckedChanged);
             // 
             // Form1
             // 
@@ -543,6 +556,7 @@ namespace Geometric2
         private System.Windows.Forms.Label drillHeightLabel;
         private System.Windows.Forms.TextBox drillHeightTextBox;
         private System.Windows.Forms.Label errorLabel;
+        private System.Windows.Forms.CheckBox showDrillerCheckBox;
     }
 }
 
