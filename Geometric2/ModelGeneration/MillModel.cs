@@ -318,47 +318,6 @@ namespace Geometric2.ModelGeneration
             float rX = f_radous / (width / (float)TopLayerX);
             float rY = f_radous / (height / (float)TopLayerY);
 
-            //for (int _x = -(int)rX; _x <= (int)rX; _x++)
-            //{
-            //    for (int _y = -(int)rY; _y <= (int)rY; _y++)
-            //    {
-            //        if (_x + x >= 0 && _y + z >= 0 && _x + x < TopLayerX && _y + z < TopLayerY)
-            //        {
-            //            int OldX = (int)(_x * (f_radous / rX));
-            //            int OldY = (int)(_y * (f_radous / rY));
-
-            //            if (OldX * OldX + OldY * OldY <= f_radous * f_radous)
-            //            {
-            //                float yb = y;
-            //                if (cutterType == CutterType.Spherical)
-            //                {
-            //                    int xa = x;
-            //                    float ya = y * 100 + f_radous;
-            //                    int za = z;
-
-            //                    int xb = x + OldX;
-            //                    int zb = z + OldY;
-
-            //                    int val = radius * radius - (xb - xa) * (xb - xa) - (zb - za) * (zb - za);
-            //                    yb = -(float)Math.Sqrt(val) + ya;
-            //                    yb /= 100;
-            //                }
-
-            //                if (drillType != DrillType.Parallel && topLayer[_x + x, _y + z] > y + drillHeight / 100.0f)
-            //                {
-            //                    nonCuttingPart[0] = 1;
-            //                    thread.Abort();
-            //                }
-
-            //                if (topLayer[_x + x, _y + z] > yb)
-            //                {
-            //                    topLayer[_x + x, _y + z] = yb;
-            //                }
-            //            }
-            //        }
-            //    }
-            //}
-
             for (float _x = -rX; _x <= rX; _x+= 1)
             {
                 for (float _y = -rY; _y <= rY; _y+= 1)
