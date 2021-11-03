@@ -38,6 +38,10 @@ namespace Geometric2
             this.clearToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.minimumHeightLabel = new System.Windows.Forms.Label();
+            this.minimumHeightTextBox = new System.Windows.Forms.TextBox();
+            this.stopButton = new System.Windows.Forms.Button();
+            this.showDrillerCheckBox = new System.Windows.Forms.CheckBox();
             this.errorLabel = new System.Windows.Forms.Label();
             this.drillHeightLabel = new System.Windows.Forms.Label();
             this.drillHeightTextBox = new System.Windows.Forms.TextBox();
@@ -69,7 +73,6 @@ namespace Geometric2
             this.cameraLightCheckBox = new System.Windows.Forms.CheckBox();
             this.progressBar = new System.Windows.Forms.ProgressBar();
             this.drillingLineCheckBox = new System.Windows.Forms.CheckBox();
-            this.showDrillerCheckBox = new System.Windows.Forms.CheckBox();
             this.menuStrip2.SuspendLayout();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.simulationTickTrackBar)).BeginInit();
@@ -149,6 +152,9 @@ namespace Geometric2
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.minimumHeightLabel);
+            this.panel1.Controls.Add(this.minimumHeightTextBox);
+            this.panel1.Controls.Add(this.stopButton);
             this.panel1.Controls.Add(this.showDrillerCheckBox);
             this.panel1.Controls.Add(this.errorLabel);
             this.panel1.Controls.Add(this.drillHeightLabel);
@@ -168,6 +174,45 @@ namespace Geometric2
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(245, 869);
             this.panel1.TabIndex = 3;
+            this.panel1.Paint += new System.Windows.Forms.PaintEventHandler(this.panel1_Paint);
+            // 
+            // minimumHeightLabel
+            // 
+            this.minimumHeightLabel.AutoSize = true;
+            this.minimumHeightLabel.Location = new System.Drawing.Point(0, 545);
+            this.minimumHeightLabel.Name = "minimumHeightLabel";
+            this.minimumHeightLabel.Size = new System.Drawing.Size(110, 13);
+            this.minimumHeightLabel.TabIndex = 16;
+            this.minimumHeightLabel.Text = "Minimum Height (mm):";
+            // 
+            // minimumHeightTextBox
+            // 
+            this.minimumHeightTextBox.Location = new System.Drawing.Point(111, 542);
+            this.minimumHeightTextBox.Name = "minimumHeightTextBox";
+            this.minimumHeightTextBox.Size = new System.Drawing.Size(114, 20);
+            this.minimumHeightTextBox.TabIndex = 15;
+            this.minimumHeightTextBox.TextChanged += new System.EventHandler(this.minimumHeightTextBox_TextChanged);
+            // 
+            // stopButton
+            // 
+            this.stopButton.Location = new System.Drawing.Point(133, 787);
+            this.stopButton.Name = "stopButton";
+            this.stopButton.Size = new System.Drawing.Size(97, 27);
+            this.stopButton.TabIndex = 14;
+            this.stopButton.Text = "STOP";
+            this.stopButton.UseVisualStyleBackColor = true;
+            this.stopButton.Click += new System.EventHandler(this.stopButton_Click);
+            // 
+            // showDrillerCheckBox
+            // 
+            this.showDrillerCheckBox.AutoSize = true;
+            this.showDrillerCheckBox.Location = new System.Drawing.Point(108, 490);
+            this.showDrillerCheckBox.Name = "showDrillerCheckBox";
+            this.showDrillerCheckBox.Size = new System.Drawing.Size(79, 17);
+            this.showDrillerCheckBox.TabIndex = 13;
+            this.showDrillerCheckBox.Text = "ShowDriller";
+            this.showDrillerCheckBox.UseVisualStyleBackColor = true;
+            this.showDrillerCheckBox.CheckedChanged += new System.EventHandler(this.showDrillerCheckBox_CheckedChanged);
             // 
             // errorLabel
             // 
@@ -180,7 +225,7 @@ namespace Geometric2
             // drillHeightLabel
             // 
             this.drillHeightLabel.AutoSize = true;
-            this.drillHeightLabel.Location = new System.Drawing.Point(19, 539);
+            this.drillHeightLabel.Location = new System.Drawing.Point(19, 516);
             this.drillHeightLabel.Name = "drillHeightLabel";
             this.drillHeightLabel.Size = new System.Drawing.Size(86, 13);
             this.drillHeightLabel.TabIndex = 11;
@@ -188,7 +233,7 @@ namespace Geometric2
             // 
             // drillHeightTextBox
             // 
-            this.drillHeightTextBox.Location = new System.Drawing.Point(108, 536);
+            this.drillHeightTextBox.Location = new System.Drawing.Point(111, 513);
             this.drillHeightTextBox.Name = "drillHeightTextBox";
             this.drillHeightTextBox.Size = new System.Drawing.Size(114, 20);
             this.drillHeightTextBox.TabIndex = 10;
@@ -476,17 +521,6 @@ namespace Geometric2
             this.drillingLineCheckBox.UseVisualStyleBackColor = true;
             this.drillingLineCheckBox.CheckedChanged += new System.EventHandler(this.drillingLineCheckBox_CheckedChanged);
             // 
-            // showDrillerCheckBox
-            // 
-            this.showDrillerCheckBox.AutoSize = true;
-            this.showDrillerCheckBox.Location = new System.Drawing.Point(108, 490);
-            this.showDrillerCheckBox.Name = "showDrillerCheckBox";
-            this.showDrillerCheckBox.Size = new System.Drawing.Size(79, 17);
-            this.showDrillerCheckBox.TabIndex = 13;
-            this.showDrillerCheckBox.Text = "ShowDriller";
-            this.showDrillerCheckBox.UseVisualStyleBackColor = true;
-            this.showDrillerCheckBox.CheckedChanged += new System.EventHandler(this.showDrillerCheckBox_CheckedChanged);
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -557,6 +591,9 @@ namespace Geometric2
         private System.Windows.Forms.TextBox drillHeightTextBox;
         private System.Windows.Forms.Label errorLabel;
         private System.Windows.Forms.CheckBox showDrillerCheckBox;
+        private System.Windows.Forms.Button stopButton;
+        private System.Windows.Forms.Label minimumHeightLabel;
+        private System.Windows.Forms.TextBox minimumHeightTextBox;
     }
 }
 

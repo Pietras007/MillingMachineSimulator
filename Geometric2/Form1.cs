@@ -40,7 +40,7 @@ namespace Geometric2
 
             thread.Start();
             coursor = new Coursor();
-            millModel = new MillModel(dataModel.Width, dataModel.Height, dataModel.Altitude, dataModel.Divisions_X, dataModel.Divisions_Y, simulationTick, percentCompleted, nonCuttingPart);
+            millModel = new MillModel(dataModel.Width, dataModel.Height, dataModel.Altitude, dataModel.Divisions_X, dataModel.Divisions_Y, simulationTick, percentCompleted, nonCuttingPart, stopButtonData);
             coursor.CoursorMode = CoursorMode.Auto;
             transformCenterLines.selectedElements = SelectedElements;
             this.glControl1.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.glControl1_MouseWheel);
@@ -71,6 +71,18 @@ namespace Geometric2
                             errorLabel.Text = "ERROR: FLAT IS GOING DOWN";
                             nonCuttingPart[0] = 0;
                         }
+
+                        if (nonCuttingPart[0] == 3)
+                        {
+                            errorLabel.Text = "STOPPED";
+                            nonCuttingPart[0] = 0;
+                        }
+
+                        if (nonCuttingPart[0] == 4)
+                        {
+                            errorLabel.Text = "ERROR: MILL UNDER MINIMUM";
+                            nonCuttingPart[0] = 0;
+                        }
                     });
                     if (percentCompleted[0] == 100)
                     {
@@ -84,7 +96,8 @@ namespace Geometric2
 
             cameraLightCheckBox.Checked = true;
             radiousTextBox.Text = "5.0";
-            drillHeightTextBox.Text = "5.0";
+            drillHeightTextBox.Text = "25.0";
+            minimumHeightTextBox.Text = "15.0";
             normalRadioButton.Checked = true;
             drillButton.Enabled = false;
         }
@@ -100,10 +113,12 @@ namespace Geometric2
         DrillType drillType = DrillType.Normal;
         CutterType cutterType = CutterType.Spherical;
         float radious = 50;
-        int drillHeight = 50;
+        int drillHeight = 250;
+        float minimumHeight = 1.5f;
         int[] simulationTick = new int[] { 0 };
         int[] percentCompleted = new int[] { 0 };
         int[] nonCuttingPart = new int[] { 0 };
+        int[] stopButtonData = new int[] { 0 };
 
 
         private XyzLines xyzLines = new XyzLines();
@@ -253,7 +268,7 @@ namespace Geometric2
 
         private void drillButton_Click(object sender, EventArgs e)
         {
-            millModel.DrillAll(drillingLines.drillPoints, cutterType, drillType, radious, drillHeight);
+            millModel.DrillAll(drillingLines.drillPoints, cutterType, drillType, radious, drillHeight, minimumHeight);
         }
 
         private void normalRadioButton_CheckedChanged(object sender, EventArgs e)
@@ -330,6 +345,33 @@ namespace Geometric2
             else
             {
                 millModel.showDriller[0] = 0;
+            }
+        }
+
+        private void stopButton_Click(object sender, EventArgs e)
+        {
+            stopButtonData[0] = 1;
+        }
+
+        private void panel1_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void minimumHeightTextBox_TextChanged(object sender, EventArgs e)
+        {
+            float minH;
+            if (float.TryParse(minimumHeightTextBox.Text, out minH))
+            {
+                minimumHeight = minH / 10;
+                if (minimumHeightTextBox.Text.Contains(".") && minimumHeightTextBox.Text.Split('.').LastOrDefault().Length > 1 || minimumHeightTextBox.Text.Split('.').Length > 2)
+                {
+                    minimumHeightTextBox.Text = (minimumHeight * 10.0f).ToString();
+                }
+            }
+            else
+            {
+                minimumHeightTextBox.Text = (minimumHeight * 10.0f).ToString();
             }
         }
 
