@@ -41,7 +41,7 @@ namespace Geometric2
             thread.Start();
             coursor = new Coursor();
             millModel = new MillModel(dataModel.Width, dataModel.Height, dataModel.Altitude, dataModel.Divisions_X, dataModel.Divisions_Y, simulationTick, percentCompleted, nonCuttingPart, stopButtonData);
-            coursor.CoursorMode = CoursorMode.Auto;
+            coursor.CoursorMode = CoursorMode.Hidden;
             transformCenterLines.selectedElements = SelectedElements;
             this.glControl1.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.glControl1_MouseWheel);
         }
@@ -52,7 +52,8 @@ namespace Geometric2
             {
                 while (true)
                 {
-                    this.Invoke((MethodInvoker)delegate { 
+                    this.Invoke((MethodInvoker)delegate
+                    {
                         progressBar.Value = percentCompleted[0];
                         if (nonCuttingPart[0] == -1)
                         {
@@ -141,93 +142,103 @@ namespace Geometric2
             string fileName = "";
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
-                fileName = openFileDialog.FileName;
-                List<string> file = new List<string>();
-                drillPositions = new List<Vector3>();
-                foreach (string line in System.IO.File.ReadLines(fileName))
+                try
                 {
-                    file.Add(line);
-                }
-
-                foreach (var line in file)
-                {
-                    string afterX = line.Split('X')[1];
-                    string X = afterX.Split('Y')[0];
-                    string afterY = afterX.Split('Y')[1];
-                    string Y = afterY.Split('Z')[0];
-                    string Z = afterY.Split('Z')[1];
-
-                    float _x, _y, _z;
-                    if (float.TryParse(X, out _x) && float.TryParse(Y, out _y) && float.TryParse(Z, out _z))
+                    fileName = openFileDialog.FileName;
+                    List<string> file = new List<string>();
+                    drillPositions = new List<Vector3>();
+                    foreach (string line in System.IO.File.ReadLines(fileName))
                     {
-                        drillPositions.Add(new Vector3(_x, _z, -_y));
-                        if(_z < 0)
+                        file.Add(line);
+                    }
+
+                    foreach (var line in file)
+                    {
+
+                        string afterX = line.Split('X')[1];
+                        string X = afterX.Split('Y')[0];
+                        string afterY = afterX.Split('Y')[1];
+                        string Y = afterY.Split('Z')[0];
+                        string Z = afterY.Split('Z')[1];
+
+                        float _x, _y, _z;
+                        if (float.TryParse(X, out _x) && float.TryParse(Y, out _y) && float.TryParse(Z, out _z))
                         {
-                            MessageBox.Show("GIONG TO DRILL UNDER SURFACE");
+                            drillPositions.Add(new Vector3(_x, _z, -_y));
+                            if (_z < 0)
+                            {
+                                MessageBox.Show("GIONG TO DRILL UNDER SURFACE");
+                            }
+                        }
+
+                    }
+
+
+                    drillingLines = new DrillingLines(drillPositions);
+                    Element elToRemove = null;
+                    foreach (var el in Elements)
+                    {
+                        if (el is DrillingLines)
+                        {
+                            elToRemove = el;
                         }
                     }
-                }
 
-                drillingLines = new DrillingLines(drillPositions);
-                Element elToRemove = null;
-                foreach(var el in Elements)
-                {
-                    if(el is DrillingLines)
+                    if (elToRemove != null)
                     {
-                        elToRemove = el;
+                        Elements.Remove(elToRemove);
+                        drillingLineCheckBox.Checked = false;
                     }
-                }
 
-                if(elToRemove != null)
-                {
-                    Elements.Remove(elToRemove);
-                    drillingLineCheckBox.Checked = false;
-                }
+                    string fileExt = fileName.Split('.').LastOrDefault();
+                    if (fileExt.Length == 3)
+                    {
+                        char drill = fileExt[0];
+                        if (drill == 'k')
+                        {
+                            cutterType = CutterType.Spherical;
+                        }
+                        else
+                        {
+                            cutterType = CutterType.Flat;
+                        }
 
-                string fileExt = fileName.Split('.').LastOrDefault();
-                if(fileExt.Length == 3)
-                {
-                    char drill = fileExt[0];
-                    if(drill == 'k')
+                        string size = fileExt[1].ToString() + fileExt[2].ToString();
+                        int r;
+                        if (int.TryParse(size, out r))
+                        {
+                            radious = r * 10;
+                        }
+                        else
+                        {
+                            radious = 50;
+                        }
+                    }
+                    else
                     {
                         cutterType = CutterType.Spherical;
-                    }
-                    else
-                    {
-                        cutterType = CutterType.Flat;
-                    }
-
-                    string size = fileExt[1].ToString() + fileExt[2].ToString();
-                    int r;
-                    if (int.TryParse(size, out r))
-                    {
-                        radious = r * 10;
-                    }
-                    else
-                    {
                         radious = 50;
                     }
-                }
-                else
-                {
-                    cutterType = CutterType.Spherical;
-                    radious = 50;
-                }
 
-                if(cutterType == CutterType.Spherical)
-                {
-                    sphericalRadioButton.Checked = true;
-                }
-                else
-                {
-                    flatRadioButton.Checked = true;
-                }
+                    if (cutterType == CutterType.Spherical)
+                    {
+                        sphericalRadioButton.Checked = true;
+                    }
+                    else
+                    {
+                        flatRadioButton.Checked = true;
+                    }
 
-                radiousTextBox.Text = (radious / 10.0f).ToString();
-                drillButton.Enabled = true;
+                    radiousTextBox.Text = (radious / 10.0f).ToString();
+                    drillButton.Enabled = true;
 
-                Elements.Add(drillingLines);
-                drillingLines.CreateGlElement(_shader, _millshader);
+                    Elements.Add(drillingLines);
+                    drillingLines.CreateGlElement(_shader, _millshader);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Bad File: " + ex.Message);
+                }
             }
         }
 
@@ -298,11 +309,11 @@ namespace Geometric2
 
         private void clearToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if(millModel != null && millModel.topLayer != null)
+            if (millModel != null && millModel.topLayer != null)
             {
-                for(int i=0;i<dataModel.Divisions_X;i++)
+                for (int i = 0; i < dataModel.Divisions_X; i++)
                 {
-                    for(int j=0;j<dataModel.Divisions_Y;j++)
+                    for (int j = 0; j < dataModel.Divisions_Y; j++)
                     {
                         millModel.topLayer[i, j] = dataModel.Altitude;
                     }
@@ -381,7 +392,7 @@ namespace Geometric2
             InitializeData initializeData = new InitializeData(dataModel);
             initializeData.ShowDialog();
 
-            if(dataModel.Width == -1)
+            if (dataModel.Width == -1)
             {
                 Environment.Exit(Environment.ExitCode);
             }
