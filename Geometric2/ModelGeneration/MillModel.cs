@@ -48,6 +48,7 @@ namespace Geometric2.ModelGeneration
         float altitude;
         Thread thread = null;
         Torus Torus;
+        bool lastTime = false;
 
         public MillModel(int width, int height, float altitude, int TopLayerX, int TopLayerY, int[] simulationTick, int[] percentCompleted, int[] nonCuttingPart, int[] stopButton)
         {
@@ -180,7 +181,7 @@ namespace Geometric2.ModelGeneration
 
         private async void RegenerateTexture()
         {
-            if (!working && drilling)
+            if (!working &&(drilling || lastTime))
             {
                 working = true;
                 await new TaskFactory().StartNew(() =>
@@ -245,6 +246,7 @@ namespace Geometric2.ModelGeneration
 
                 percentCompleted[0] = 100;
                 drilling = false;
+                lastTime = true;
             });
             thread.Start();
         }
