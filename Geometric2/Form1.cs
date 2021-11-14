@@ -152,6 +152,7 @@ namespace Geometric2
                         file.Add(line);
                     }
 
+                    bool wasUnderSurface = false;
                     foreach (var line in file)
                     {
 
@@ -167,10 +168,14 @@ namespace Geometric2
                             drillPositions.Add(new Vector3(_x, _z, -_y));
                             if (_z < 0)
                             {
-                                MessageBox.Show("GIONG TO DRILL UNDER SURFACE");
+                                wasUnderSurface = true;
                             }
                         }
+                    }
 
+                    if(wasUnderSurface)
+                    {
+                        MessageBox.Show("GIONG TO DRILL UNDER SURFACE");
                     }
 
 

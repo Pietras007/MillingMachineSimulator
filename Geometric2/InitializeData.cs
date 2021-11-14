@@ -22,8 +22,8 @@ namespace Geometric2
 
         private void InitializeData_Load(object sender, EventArgs e)
         {
-            widthTextBox.Text = "200.0";
-            heightTextBox.Text = "400.0";
+            widthTextBox.Text = "150.0";
+            heightTextBox.Text = "150.0";
             altitudeTextBox.Text = "50.0";
             divisions_X_textbox.Text = "1000";
             divisions_Y_textbox.Text = "1000";

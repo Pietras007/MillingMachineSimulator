@@ -332,7 +332,7 @@ namespace Geometric2.ModelGeneration
 
         public void DrillHole(Vector3 point, float r, CutterType cutterType, int drillHeight, DrillType drillType, bool goingDown, float minimumH)
         {
-            if(point.Y < minimumH)
+            if(drillType != DrillType.Parallel&& point.Y < minimumH)
             {
                 nonCuttingPart[0] = 4;
                 thread.Abort();
