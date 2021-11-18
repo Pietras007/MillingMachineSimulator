@@ -162,12 +162,12 @@ namespace Geometric2.ModelGeneration
             GL.DrawElements(PrimitiveType.Triangles, 3 * TopLayerPoints.Length, DrawElementsType.UnsignedInt, 0);
             GL.BindVertexArray(0);
 
-            GL.BindVertexArray(MillModelBottomLayerVAO);
-            texture.Use();
-            specular.Use(TextureUnit.Texture1);
-            heightmap.Use(TextureUnit.Texture2);
-            GL.DrawElements(PrimitiveType.Triangles, 3 * BottomLayerPoints.Length, DrawElementsType.UnsignedInt, 0);
-            GL.BindVertexArray(0);
+            //GL.BindVertexArray(MillModelBottomLayerVAO);
+            //texture.Use();
+            //specular.Use(TextureUnit.Texture1);
+            //heightmap.Use(TextureUnit.Texture2);
+            //GL.DrawElements(PrimitiveType.Triangles, 3 * BottomLayerPoints.Length, DrawElementsType.UnsignedInt, 0);
+            //GL.BindVertexArray(0);
 
             GL.BindVertexArray(MillModelRoundLayerVAO);
             texture.Use();
@@ -335,7 +335,7 @@ namespace Geometric2.ModelGeneration
             if(drillType != DrillType.Parallel&& point.Y < minimumH)
             {
                 nonCuttingPart[0] = 4;
-                thread.Abort();
+                //thread.Abort();
             }
 
             float x = point.X;
@@ -379,13 +379,13 @@ namespace Geometric2.ModelGeneration
                             if (drillType != DrillType.Parallel && topLayer[(int)(_x + x), (int)(_y + z)] > y + drillHeight / 100.0f)
                             {
                                 nonCuttingPart[0] = 1;
-                                thread.Abort();
+                                //thread.Abort();
                             }
 
                             if (drillType != DrillType.Parallel && goingDown && cutterType == CutterType.Flat && topLayer[(int)(_x + x), (int)(_y + z)] > yb)
                             {
                                 nonCuttingPart[0] = 2;
-                                thread.Abort();
+                                //thread.Abort();
                             }
 
                             if (topLayer[(int)(_x + x), (int)(_y + z)] > yb)
